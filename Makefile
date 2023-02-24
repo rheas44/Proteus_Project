@@ -1,82 +1,27 @@
-TARGET = Proteus
+FEHSD_DEVICE=/dev/sda1
+TARGET=Proteus
+export TARGET
 
-GITBINARY := git
-FEHURL := google.com
-FIRMWAREREPO := fehproteusfirmware
+all: build deploy
 
-ifeq ($(OS),Windows_NT)	
-	SHELL := CMD
-endif
-
-all:
-ifeq ($(OS),Windows_NT)	
-# check for internet connection
-# if there's internet, check to see if FEHproteusfirmware folder exists
-# if it does, remove it before cloning the repo
-	@ping -n 1 -w 1000 $(FEHURL) > NUL & \
-	if errorlevel 1 \
-	( \
-		( echo "Warning: No internet connection!" ) \
-	) \
-	else \
-	( \
-		( if exist "$(FIRMWAREREPO)" \
-		( \
-			cd $(FIRMWAREREPO) && \
-			$(GITBINARY) stash && \
-			$(GITBINARY) pull && \
-			cd .. \
-		) \
-		else \
-		( \
-			$(GITBINARY) config --global http.sslVerify false  && \
-			$(GITBINARY) clone https://code.osu.edu/fehelectronics/proteus_software/$(FIRMWAREREPO).git \
-		) \
-		) \
-	) 
-else
-# Mac/Linux
-	@ping -c 1 -W 1000 $(FEHURL) > NUL ; \
-	if [ "$$?" -ne 0 ]; then \
-		echo "Warning: No internet connection!"; \
-	else \
-		if [ -d "$(FIRMWAREREPO)" ]; then \
-			cd $(FIRMWAREREPO) ; \
-			$(GITBINARY) stash ; \
-       		$(GITBINARY) pull ; \
-       		cd .. ; \
-		else \
-       		$(GITBINARY) clone https://code.osu.edu/fehelectronics/proteus_software/$(FIRMWAREREPO).git ; \
-		fi \
-	fi \
-
-endif
-
-ifeq ($(OS),Windows_NT)	
-	@cd $(FIRMWAREREPO) && mingw32-make all TARGET=$(TARGET)
-	@cd $(FIRMWAREREPO) && mingw32-make deploy TARGET=$(TARGET)
-else
-	@cd $(FIRMWAREREPO) && make all TARGET=$(TARGET)
-	@cd $(FIRMWAREREPO) && make deploy TARGET=$(TARGET)
-endif
-
-deploy:
-ifeq ($(OS),Windows_NT)	
-	@cd $(FIRMWAREREPO) && mingw32-make deploy TARGET=$(TARGET)
-else
-	@cd $(FIRMWAREREPO) && make deploy TARGET=$(TARGET)
-endif
+build:
+	$(MAKE) -C fehproteusfirmware all
 
 clean:
-ifeq ($(OS),Windows_NT)	
-	@cd $(FIRMWAREREPO) && mingw32-make clean TARGET=$(TARGET)
-else
-	@cd $(FIRMWAREREPO) && make clean TARGET=$(TARGET)
-endif
+	$(MAKE) -C fehproteusfirmware clean
 
-run:
-ifeq ($(OS),Windows_NT)	
-	@cd $(FIRMWAREREPO) && mingw32-make run TARGET=$(TARGET)
+ifeq ($(OS),Windows_NT)
+deploy: build
+	$(MAKE) -C fehproteusfirmware deploy
 else
-	@cd $(FIRMWAREREPO) && make run TARGET=$(TARGET)
+UNAME_S := $(shell uname -s)
+deploy: build
+ifeq ($(UNAME_S),Darwin)
+	$(MAKE) -C fehproteusfirmware deploy
+else
+	sudo mkdir -p /media/FEHSD
+	sudo mount $(FEHSD_DEVICE) /media/FEHSD
+	sudo cp *.s19 /media/FEHSD/CODE.S19
+	sudo umount $(FEHSD_DEVICE)
+endif
 endif
