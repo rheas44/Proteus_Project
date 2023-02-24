@@ -5585,13 +5585,13 @@ LOAD c:/gcc-arm-none-eabi-10.3-2021.10/bin/../lib/gcc/arm-none-eabi/10.3.1/thumb
  .text._Z12move_forwardid
                 0x0000c4d0      0x160 ../main.o
                 0x0000c4d0                move_forward(int, double)
- .text._Z10turn_rightid
-                0x0000c630      0x154 ../main.o
-                0x0000c630                turn_right(int, double)
- *fill*         0x0000c784        0x4 
  .text._Z9turn_leftid
+                0x0000c630      0x154 ../main.o
+                0x0000c630                turn_left(int, double)
+ *fill*         0x0000c784        0x4 
+ .text._Z10turn_rightid
                 0x0000c788      0x154 ../main.o
-                0x0000c788                turn_left(int, double)
+                0x0000c788                turn_right(int, double)
  *fill*         0x0000c8dc        0x4 
  .text._Z10try_coursev
                 0x0000c8e0       0x6c ../main.o

@@ -59,9 +59,9 @@ void move_forward(int percent, double inches)
 }
 
 
-void turn_right(int percent, double degrees)
+void turn_left(int percent, double degrees)
 {
-    gui.textLine("turn right", 0);
+    gui.textLine("turn left", 0);
     int counts = 222 * (degrees/90);
     right_encoder.ResetCounts();
     left_encoder.ResetCounts();
@@ -76,9 +76,9 @@ void turn_right(int percent, double degrees)
 }
 
 
-void turn_left(int percent, double degrees)
+void turn_right(int percent, double degrees)
 {
-    gui.textLine("turn left", 0);
+    gui.textLine("turn right", 0);
     int counts = 222 * (degrees/90);
     right_encoder.ResetCounts();
     left_encoder.ResetCounts();
