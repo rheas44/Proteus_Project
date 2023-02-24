@@ -103,6 +103,10 @@ void try_course() {
     move_forward(25, 8.8);
     turn_right(25, 90);
     move_forward(25, 30);
+    turn_left(25, 90);
+    move_forward(25, 8.8);
+    turn_left(25, 90);
+    move_forward(25, 30);
 }
 
 void calibrate_motors() {
