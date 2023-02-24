@@ -31,7 +31,7 @@ Gui gui;
 
 void move_forward(int percent, double inches)
 {
-    
+    double timeOut = TimeNow() + 10.0;
     int expectedCounts = (ONE_REVOLUTION_COUNTS * inches) / (2 * PI * WHEEL_RADIUS);
     LCD.Write("Expected counts ");
     LCD.WriteLine(expectedCounts);
@@ -44,6 +44,9 @@ void move_forward(int percent, double inches)
 
     double nextWriteLineTime = 0;
     while(true) {
+        if (TimeNow() > timeOut) {
+            break;
+        }
         int counts = (left_encoder.Counts() + right_encoder.Counts()) / 2.;
         if (counts > expectedCounts) {
             break;
