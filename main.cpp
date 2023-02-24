@@ -106,8 +106,9 @@ void try_course() {
     move_forward(25, 8.8);
     turn_right(25, 90);
     move_forward(25, 30);
+    move_forward(-25, 4);
     turn_left(25, 90);
-    move_forward(25, 8.8);
+    move_forward(25, 11);
     turn_left(25, 90);
     move_forward(25, 30);
 }
