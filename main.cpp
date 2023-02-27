@@ -17,6 +17,9 @@ DigitalEncoder left_encoder(FEHIO::P0_1);
 FEHMotor right_motor(FEHMotor::Motor0,9.0);
 FEHMotor left_motor(FEHMotor::Motor1,9.0);
 
+//Declaration for analog input pin
+AnalogInputPin cdsCell(FEHIO::P1_1);
+
 const double WHEEL_RADIUS = 2.5 / 2;
 const double PI = 3.14159;
 const int ONE_REVOLUTION_COUNTS = 318;
@@ -137,6 +140,8 @@ int main(void)
     while(LCD.Touch(&touchX,&touchY)); //Wait for screen to be unpressed
         
     // calibrate_motors();
+    while (cdsCell.Value() <= 0.2 || cdsCell.Value() >= 1.5) {
+    }
     try_course();
 
     return 0;
