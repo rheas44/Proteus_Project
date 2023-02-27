@@ -9,7 +9,7 @@
 const int LCD_WIDTH = 320;
 const int LCD_HEIGHT = 240;
 
-const double leftMultiplier = 0.99;
+double leftMultiplier = 1.009;
 
 //Declarations for encoders & motors
 DigitalEncoder right_encoder(FEHIO::P0_0);
@@ -67,7 +67,7 @@ void move_forward(int percent, double inches)
 
     double nextTime = 0;
     int oldCounts = -10;
-    int numberZeros = 0;
+    int numberLowChanges = 0;
     while(true) {
         if (TimeNow() > startTime+TIME_OUT) {
             break;
@@ -76,10 +76,10 @@ void move_forward(int percent, double inches)
         if (counts > expectedCounts) {
             break;
         }
-        if (counts == oldCounts) {
-            numberZeros++;
+        if (counts - oldCounts < 4) {
+            numberLowChanges++;
         }
-        if (numberZeros > 4) {
+        if (numberLowChanges > 8) {
             break;
         }
         gui.textLine("expected counts", expectedCounts, 4);
@@ -134,12 +134,20 @@ void turn_right(int percent, double degrees)
 }
 
 void try_course() {
-    wait_for_start_light();
+    // wait_for_start_light();
 
-    // go toward ramp
-    move_forward(25, 14.0);
+    // go forward
+    move_forward(25, 8);
+
+    // align with right wall
+    turn_left(25, 45);
+    move_forward(-25, 10);
+    move_forward(-15, 10);
+
     // go up ramp
-    move_forward(40, 5.0+12.31+4.0);
+    move_forward(25, 1);
+    turn_right(25, 90);
+    move_forward(40, 5+5.0+12.31+4.0);
 
     // align with kiosk
     turn_left(25, 90);
@@ -147,23 +155,28 @@ void try_course() {
     turn_right(25, 90);
 
     // go to kisok
-    move_forward(25, 30);
+    move_forward(15, 30);
 
     // move back
     move_forward(-25, 4);
 
-    // align with ramp
-    turn_left(25, 90);
-    move_forward(25, 11);
-    turn_left(25, 90);
+    // align with left wall
+    turn_left(25, 90+15);
+    move_forward(25, 10);
+    turn_right(25, 15);
+    move_forward(15, 10);
+    move_forward(-15, .5);
+    turn_left(15, 90-15); // it would be better to not do this
 
     // go down ramp
     move_forward(25, 30);
 }
 
 void calibrate_motors() {
+    leftMultiplier = 1.0;
     LCD.WriteLine("Calibrating motors");
     move_forward(25, 8.0);
+    LCD.Clear();
     LCD.Write("Left: ");
     LCD.WriteLine(left_encoder.Counts());
     LCD.Write("Right: ");
@@ -188,6 +201,7 @@ int main(void)
     LCD.Clear();
 
     // move_forward(25, 8);
+    // calibrate_motors();
     try_course();
 
     return 0;
