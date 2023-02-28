@@ -13,6 +13,7 @@ const int LCD_HEIGHT = 240;
 double leftMultiplier = 1;
 
 //Declarations for encoders & motors
+DigitalEncoder right_encoder(FEHIO::P0_0);
 DigitalEncoder left_encoder(FEHIO::P0_1);
 FEHMotor right_motor(FEHMotor::Motor0,9.0);
 FEHMotor left_motor(FEHMotor::Motor1,9.0);
@@ -42,16 +43,17 @@ Gui gui;
 
 void resetCounts() {
     left_encoder.ResetCounts();
+    right_encoder.ResetCounts();
 }
 
-double getCounts() {
-    return left_encoder.Counts();
+int getCounts() {
+    return (left_encoder.Counts() + right_encoder.Counts())/2;
 }
 
 void wait_for_start_light() {
     double nextTime = 0;
     gui.textLine("waiting for light", 0);
-    while (cdsCell.Value() >= 1.5) {
+    while (cdsCell.Value() >= 1.0) {
         if (TimeNow() > nextTime) {
             gui.textLine("cds: ", cdsCell.Value(), 1);
             gui.textLine("expected: ", 1.5, 2);
@@ -81,15 +83,15 @@ void move_forward(int percent, double inches)
             break;
         }
         int counts = getCounts();
-        if (counts > expectedCounts) {
+        if (counts >= expectedCounts) {
             break;
         }
         if (counts - oldCounts < 4) {
             numberLowChanges++;
         }
-        if (numberLowChanges > 8) {
-            break;
-        }
+        // if (numberLowChanges > 8) {
+        //     break;
+        // }
         gui.textLine("expected counts", expectedCounts, 4);
         if (TimeNow() > nextTime) {
             gui.textLine("counts", counts, 1);
@@ -122,7 +124,7 @@ void turn_right(int percent, double degrees)
         if (TimeNow() > nextTime) {
             gui.textLine("counts", counts, 1);
             gui.textLine("expected", expectedCounts, 2);
-            gui.textLine("time", TimeNow() - startTime, 2);
+            gui.textLine("time", TimeNow() - startTime, 3);
             if (TimeNow() > startTime + TIME_OUT) {
                 break;
             }
@@ -153,15 +155,17 @@ void try_course() {
     // go up ramp
     move_forward(25, 1);
     turn_right(25, 90);
-    move_forward(40, 5+5.0+12.31+4.0);
+    // move_forward(40, 5+5.0+12.31+4.0);
+    move_forward(40, 6 + 12.31 + 10);
 
     // align with kiosk
     turn_left(25, 90);
-    move_forward(25, 8.8);
+    // move_forward(25, 8.8);
+    move_forward(25, 10);
     turn_right(25, 90);
 
     // go to kisok
-    move_forward(15, 30);
+    move_forward(15, 12 + 12);
 
     // move back
     move_forward(-25, 4);
@@ -175,11 +179,10 @@ void try_course() {
     turn_left(15, 90-15); // it would be better to not do this
 
     // go down ramp
-    move_forward(25, 30);
+    move_forward(25, 35);
 }
 
 void calibrate_motors() {
-    DigitalEncoder right_encoder(FEHIO::P0_0);
     leftMultiplier = 1.0;
     LCD.WriteLine("Calibrating motors");
     move_forward(25, 8);
@@ -211,10 +214,10 @@ int main(void)
     right_motor.SetPercent(25);
 
     // move_forward(25, 8);
-    calibrate_motors();
+    // calibrate_motors();
 
-    // wait_for_start_light()
-    // try_course();
+    wait_for_start_light();
+    try_course();
 
     return 0;
 }
