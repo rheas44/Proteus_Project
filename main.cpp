@@ -68,7 +68,7 @@ void move_forward(int percent, double inches)
 {
     LCD.Clear();
     gui.textLine(percent > 0 ? "move forward" : "move backward", 0);
-    Sleep(1.0);
+    // Sleep(1.0);
     double startTime = TimeNow();
     int expectedCounts = (ONE_REVOLUTION_COUNTS * inches) / (2 * PI * WHEEL_RADIUS);
 
@@ -117,7 +117,7 @@ void turn_right(int percent, double degrees)
 {
     LCD.Clear();
     gui.textLine(percent < 0 ? "turn left" : "turn right", 0);
-    Sleep(1.0);
+    // Sleep(1.0);
 
     double radians = degrees * PI / 180;
     int expectedCounts = (double)ONE_REVOLUTION_COUNTS * (3.5 * radians) / 2 / PI / WHEEL_RADIUS;
@@ -180,8 +180,8 @@ void try_course() {
     move_backward(25, 4);
 
     // align with left wall
-    turn_left(25, 90+15);
-    move_forward(25, 18);
+    turn_left(25, 90);
+    move_forward(40, 18);
 
     // move_backward(25, .15);
     turn_left(25, 90);
