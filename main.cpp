@@ -21,9 +21,9 @@ FEHMotor left_motor(FEHMotor::Motor1,9.0);
 //Declaration for analog input pin
 AnalogInputPin cdsCell(FEHIO::P3_7);
 
-const double WHEEL_RADIUS = 2.5 / 2;
-const double PI = 3.14159;
-const int ONE_REVOLUTION_COUNTS = 318;
+constexpr double WHEEL_RADIUS = 2.5 / 2;
+constexpr double PI = 3.14159;
+constexpr int ONE_REVOLUTION_COUNTS = 318;
 
 struct Gui {
     void textLine(std::string s, int row) {
@@ -67,6 +67,8 @@ const double TIME_OUT = 10.0;
 void move_forward(int percent, double inches)
 {
     LCD.Clear();
+    gui.textLine(percent > 0 ? "move forward" : "move backward", 0);
+    Sleep(1.0);
     double startTime = TimeNow();
     int expectedCounts = (ONE_REVOLUTION_COUNTS * inches) / (2 * PI * WHEEL_RADIUS);
 
@@ -86,12 +88,12 @@ void move_forward(int percent, double inches)
         if (counts >= expectedCounts) {
             break;
         }
-        if (counts - oldCounts < 4) {
+        if (counts - oldCounts < 2) {
             numberLowChanges++;
         }
-        // if (numberLowChanges > 8) {
-        //     break;
-        // }
+        if (numberLowChanges > 16) {
+            break;
+        }
         gui.textLine("expected counts", expectedCounts, 4);
         if (TimeNow() > nextTime) {
             gui.textLine("counts", counts, 1);
@@ -106,16 +108,24 @@ void move_forward(int percent, double inches)
     left_motor.Stop();
 }
 
+void move_backward(int percent, double inches) {
+    move_forward(-percent, inches);
+}
+
 
 void turn_right(int percent, double degrees)
 {
     LCD.Clear();
     gui.textLine(percent < 0 ? "turn left" : "turn right", 0);
-    int expectedCounts = std::abs(222 * (degrees/90));
+    Sleep(1.0);
+
+    double radians = degrees * PI / 180;
+    int expectedCounts = (double)ONE_REVOLUTION_COUNTS * (3.5 * radians) / 2 / PI / WHEEL_RADIUS;
+
     resetCounts();
 
-    right_motor.SetPercent(percent);
-    left_motor.SetPercent(-leftMultiplier*percent);
+    right_motor.SetPercent(-percent);
+    left_motor.SetPercent(leftMultiplier*percent);
 
     double nextTime = 0;
     double startTime = TimeNow();
@@ -145,15 +155,14 @@ void turn_left(int percent, double degrees)
 
 void try_course() {
     // go forward
-    move_forward(25, 8);
+    move_forward(25, 9.5);
 
     // align with right wall
     turn_left(25, 45);
-    move_forward(-25, 10);
-    move_forward(-15, 10);
+    move_backward(25, 25);
 
     // go up ramp
-    move_forward(25, 1);
+    move_forward(25, 3.5);
     turn_right(25, 90);
     // move_forward(40, 5+5.0+12.31+4.0);
     move_forward(40, 6 + 12.31 + 10);
@@ -165,18 +174,17 @@ void try_course() {
     turn_right(25, 90);
 
     // go to kisok
-    move_forward(15, 12 + 12);
+    move_forward(25, 12 + 12 + 3);
 
     // move back
-    move_forward(-25, 4);
+    move_backward(25, 4);
 
     // align with left wall
     turn_left(25, 90+15);
-    move_forward(25, 10);
-    turn_right(25, 15);
-    move_forward(15, 10);
-    move_forward(-15, .5);
-    turn_left(15, 90-15); // it would be better to not do this
+    move_forward(25, 18);
+
+    // move_backward(25, .15);
+    turn_left(25, 90);
 
     // go down ramp
     move_forward(25, 35);
@@ -210,14 +218,13 @@ int main(void)
     while(LCD.Touch(&touchX,&touchY)); //Wait for screen to be unpressed
     LCD.Clear();
 
-    left_motor.SetPercent(25);
-    right_motor.SetPercent(25);
-
     // move_forward(25, 8);
     // calibrate_motors();
 
     wait_for_start_light();
     try_course();
+
+
 
     return 0;
 }
