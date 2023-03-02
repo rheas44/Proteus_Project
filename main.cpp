@@ -17,6 +17,7 @@ DigitalEncoder right_encoder(FEHIO::P0_0);
 DigitalEncoder left_encoder(FEHIO::P0_1);
 FEHMotor right_motor(FEHMotor::Motor0,9.0);
 FEHMotor left_motor(FEHMotor::Motor1,9.0);
+FEHMotor arm_motor(FEHMotor::Motor2, 4.5);
 
 //Declaration for analog input pin
 AnalogInputPin cdsCell(FEHIO::P3_7);
@@ -209,6 +210,7 @@ int main(void)
     LCD.Clear(BLACK);
     LCD.SetFontColor(WHITE);
 
+    // RPS.InitializeTouchMenu();
 
     gui.textLine("Touch the screen", 0);
     while(!LCD.Touch(&touchX,&touchY)) {
@@ -221,9 +223,22 @@ int main(void)
     // move_forward(25, 8);
     // calibrate_motors();
 
-    wait_for_start_light();
-    try_course();
+    // wait_for_start_light();
+    // try_course();
 
+    arm_motor.SetPercent(-50);
+
+    Sleep(10.0);
+
+    arm_motor.Stop();
+
+    Sleep(1.0);
+
+    arm_motor.SetPercent(50);
+
+    Sleep(10.0);
+
+    arm_motor.Stop();
 
 
     return 0;
