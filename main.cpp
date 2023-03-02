@@ -223,6 +223,7 @@ void second_performance_checkpoint() {
         move_forward(25, 15);
         turn_right(25, 90);
         move_forward(25, 14);
+        move_backward(25, 4);
     }
 
     // blue light case (need to check cds cell values)
@@ -231,6 +232,7 @@ void second_performance_checkpoint() {
         move_forward(25, 6);
         turn_right(25, 90);
         move_forward(25, 14);
+        move_backward(25, 4);
     }
 
     // align with left wall
