@@ -22,6 +22,9 @@ FEHMotor arm_motor(FEHMotor::Motor2, 4.5);
 //Declaration for analog input pin
 AnalogInputPin cdsCell(FEHIO::P3_7);
 
+// Fuel lever number.
+int fuel_lever = 0;
+
 constexpr double WHEEL_RADIUS = 2.5 / 2;
 constexpr double PI = 3.14159;
 constexpr int ONE_REVOLUTION_COUNTS = 318;
@@ -243,7 +246,136 @@ void second_performance_checkpoint() {
     turn_left(25, 90);
 
     // go down ramp
-    move_forward(25, 35);
+    move_forward(25, 29);
+}
+
+void choose_airline() {
+    // go forward
+    move_forward(25, 9.5);
+
+    // align with right wall
+    turn_left(25, 45);
+    move_backward(25, 25);
+
+    // go up ramp
+    move_forward(25, 3.5);
+    turn_right(25, 90);
+    // move_forward(40, 5+5.0+12.31+4.0);
+    move_forward(40, 6 + 12.31 + 5);
+
+    // drive near light
+    turn_left(25, 90);
+    // move_forward(25, 8.8);
+    move_forward(25, 10);
+    turn_right(25, 90);
+
+    // go to light
+    move_forward(25, 12 + 12);
+
+    // move back
+    move_backward(25, 4);
+
+    // red light case (need to check cds cell values)
+    if (cdsCell.Value() < 0.5) {
+        turn_left(25, 90);
+        move_forward(25, 15);
+        turn_right(25, 90);
+        move_forward(25, 14);
+        move_backward(25, 4);
+    }
+
+    // blue light case (need to check cds cell values)
+    if (cdsCell.Value() > 0.5 && cdsCell.Value() < 0.9) {
+        turn_left(25, 90);
+        move_forward(25, 6);
+        turn_right(25, 90);
+        move_forward(25, 14);
+        move_backward(25, 4);
+    }
+
+    arm_motor.SetPercent(50);
+    move_forward(25, 4);
+    move_backward(25, 4);
+    arm_motor.SetPercent(-50);
+
+    // align with left wall
+    turn_left(25, 90);
+    move_forward(40, 18);
+
+    // move_backward(25, .15);
+    turn_left(25, 90);
+
+    // go down ramp
+    move_forward(25, 29);
+}
+
+void fuel_airplane() {
+    if (fuel_lever == 1) {
+        arm_motor.SetPercent(50);
+        move_backward(25, 2);
+        Sleep(5.0);
+        arm_motor.SetPercent(-50);
+    } else if (fuel_lever == 2) {
+        turn_left(25, 90);
+        move_forward(25, 1);
+        turn_right(25, 90);
+        arm_motor.SetPercent(50);
+        move_backward(25, 2);
+        arm_motor.SetPercent(50);
+        move_backward(25, 2);
+        Sleep(5.0);
+        arm_motor.SetPercent(-50);
+    } else {
+        turn_left(25, 90);
+        move_forward(25, 2);
+        turn_right(25, 90);
+        arm_motor.SetPercent(50);
+        move_backward(25, 2);
+        arm_motor.SetPercent(50);
+        move_backward(25, 2);
+        Sleep(5.0);
+        arm_motor.SetPercent(-50);
+    }
+}
+
+void luggage() {
+    move_backward(25, 2);
+    turn_right(25, 90);
+    turn_right(25, 90);
+    arm_motor.SetPercent(50);
+    arm_motor.SetPercent(-50);
+    move_backward(25, 4);
+}
+
+void passport_stamp() {
+    turn_right(25, 90);
+    move_forward(25, 17);
+    turn_left(25, 90);
+    move_forward(25, 30);
+    arm_motor.SetPercent(50);
+    move_forward(25, 1);
+    arm_motor.SetPercent(-50);
+}
+
+void final_button() {
+    move_backward(25, 4.7);
+    turn_left(25, 90);
+    move_forward(25, 19);
+    turn_left(25, 90);
+    move_forward(29, 19);
+    turn_right(25, 90);
+    move_forward(29, 21);
+    turn_right(25, 90);
+    move_forward(19, 21);
+}
+
+void course_traversal() {
+    // Begin by choosing the correct airline.
+    choose_airline();
+    fuel_airplane();
+    luggage();
+    passport_stamp();
+    final_button();
 }
 
 void calibrate_motors() {
@@ -278,8 +410,10 @@ int main(void)
     // move_forward(25, 8);
     // calibrate_motors();
 
-     wait_for_red_light();
-     first_performance_checkpoint();
+    // wait_for_red_light();
+    // first_performance_checkpoint();
+
+    second_performance_checkpoint();
 
     // arm_motor.SetPercent(-50);
 
