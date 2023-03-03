@@ -12,6 +12,8 @@ const int LCD_HEIGHT = 240;
 
 double leftMultiplier = 1;
 
+double nextShowCDSTime = 0;
+
 //Declarations for encoders & motors
 DigitalEncoder right_encoder(FEHIO::P0_0);
 DigitalEncoder left_encoder(FEHIO::P0_1);
@@ -21,6 +23,8 @@ FEHMotor arm_motor(FEHMotor::Motor2, 4.5);
 
 //Declaration for analog input pin
 AnalogInputPin cdsCell(FEHIO::P3_7);
+
+
 
 // Fuel lever number.
 int fuel_lever = 0;
@@ -48,6 +52,13 @@ Gui gui;
 void resetCounts() {
     left_encoder.ResetCounts();
     right_encoder.ResetCounts();
+}
+
+void showCDS() {
+    if (TimeNow() > nextShowCDSTime) {
+        gui.textLine("cds", cdsCell.Value(), 13);
+        nextShowCDSTime = TimeNow() + 0.25;
+    }
 }
 
 int getCounts() {
@@ -85,6 +96,7 @@ void move_forward(int percent, double inches)
     int oldCounts = -10;
     int numberLowChanges = 0;
     while(true) {
+        showCDS();
         if (TimeNow() > startTime+TIME_OUT) {
             break;
         }
@@ -134,6 +146,7 @@ void turn_right(int percent, double degrees)
     double nextTime = 0;
     double startTime = TimeNow();
     while(true) {
+        showCDS();
         int counts = getCounts();
         if (TimeNow() > nextTime) {
             gui.textLine("counts", counts, 1);
@@ -214,7 +227,21 @@ void second_performance_checkpoint() {
     // move_forward(25, 8.8);
     move_forward(25, 17.5);
     turn_right(35, 90);
-    move_forward(25, 16);
+    left_motor.SetPercent(25);
+    right_motor.SetPercent(25);
+    bool red = false;
+    resetCounts();
+    int inches = 15;
+    int expectedCounts = (ONE_REVOLUTION_COUNTS * inches) / (2 * PI * WHEEL_RADIUS);
+    while (getCounts() < expectedCounts) {
+        showCDS();
+        gui.textLine("cds", cdsCell.Value(), 1);
+        if (cdsCell.Value() < 0.5) {
+            red = true;    
+        }
+    }
+    left_motor.SetPercent(0);
+    right_motor.SetPercent(0);
     // go to light
     // while (cdsCell.Value() >= 1.0) {
     //     left_motor.SetPercent(25);
@@ -223,7 +250,9 @@ void second_performance_checkpoint() {
     //     left_motor.SetPercent(0);
     //     right_motor.SetPercent(0);
     //     // red light case (need to check cds cell values)
-        if (cdsCell.Value() < 0.8) {
+    
+        // red light case
+        if (red) {
             move_backward(25, 10);
             turn_right(35, 90);
             move_forward(25, 11);
@@ -231,7 +260,7 @@ void second_performance_checkpoint() {
             move_forward(25, 20);
             move_backward(25, 4);
             // blue light case
-        } else if (cdsCell.Value() > 0.6 && cdsCell.Value() < 1.0) {
+        } else {
             move_backward(25, 2);
             turn_right(35, 90);
             move_forward(25, 4);
