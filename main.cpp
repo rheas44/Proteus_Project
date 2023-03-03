@@ -54,7 +54,7 @@ int getCounts() {
     return (left_encoder.Counts() + right_encoder.Counts())/2;
 }
 
-void wait_for_red_light() {
+void wait_for_light() {
     double nextTime = 0;
     gui.textLine("waiting for light", 0);
     while (cdsCell.Value() >= 1.0) {
@@ -167,15 +167,15 @@ void first_performance_checkpoint() {
 
     // go up ramp
     move_forward(25, 3.5);
-    turn_right(25, 90);
+    turn_right(35, 90);
     // move_forward(40, 5+5.0+12.31+4.0);
     move_forward(40, 6 + 12.31 + 10);
 
     // align with kiosk
-    turn_left(25, 90);
+    turn_left(35, 90);
     // move_forward(25, 8.8);
     move_forward(25, 10);
-    turn_right(25, 90);
+    turn_right(35, 90);
 
     // go to kisok
     move_forward(25, 12 + 12 + 3);
@@ -184,66 +184,71 @@ void first_performance_checkpoint() {
     move_backward(25, 4);
 
     // align with left wall
-    turn_left(25, 90);
+    turn_left(35, 90);
     move_forward(40, 18);
 
     // move_backward(25, .15);
-    turn_left(25, 90);
+    turn_left(35, 90);
 
     // go down ramp
     move_forward(25, 35);
 }
 
 void second_performance_checkpoint() {
+    wait_for_light();
     // go forward
     move_forward(25, 9.5);
 
     // align with right wall
     turn_left(25, 45);
-    move_backward(25, 25);
+    move_backward(35, 15);
 
     // go up ramp
     move_forward(25, 3.5);
-    turn_right(25, 90);
+    turn_right(35, 90);
     // move_forward(40, 5+5.0+12.31+4.0);
-    move_forward(40, 6 + 12.31 + 5);
+    move_forward(40, 6 + 12.31 + 10);
 
     // drive near light
-    turn_left(25, 90);
+    turn_left(25, 100);
     // move_forward(25, 8.8);
-    move_forward(25, 10);
-    turn_right(25, 90);
-
+    move_forward(25, 17.5);
+    turn_right(35, 90);
+    move_forward(25, 16);
     // go to light
-    move_forward(25, 12 + 12);
+    // while (cdsCell.Value() >= 1.0) {
+    //     left_motor.SetPercent(25);
+    //     right_motor.SetPercent(25);
+    // }    
+    //     left_motor.SetPercent(0);
+    //     right_motor.SetPercent(0);
+    //     // red light case (need to check cds cell values)
+        if (cdsCell.Value() < 0.8) {
+            move_backward(25, 10);
+            turn_right(35, 90);
+            move_forward(25, 11);
+            turn_left(35, 100);
+            move_forward(25, 20);
+            move_backward(25, 4);
+            // blue light case
+        } else if (cdsCell.Value() > 0.6 && cdsCell.Value() < 1.0) {
+            move_backward(25, 2);
+            turn_right(35, 90);
+            move_forward(25, 4);
+            turn_left(35, 90);
+            move_forward(25, 14);
+            move_backward(25, 4);
+        }
 
     // move back
     move_backward(25, 4);
 
-    // red light case (need to check cds cell values)
-    if (cdsCell.Value() < 0.5) {
-        turn_left(25, 90);
-        move_forward(25, 15);
-        turn_right(25, 90);
-        move_forward(25, 14);
-        move_backward(25, 4);
-    }
-
-    // blue light case (need to check cds cell values)
-    if (cdsCell.Value() > 0.5 && cdsCell.Value() < 0.9) {
-        turn_left(25, 90);
-        move_forward(25, 6);
-        turn_right(25, 90);
-        move_forward(25, 14);
-        move_backward(25, 4);
-    }
-
     // align with left wall
-    turn_left(25, 90);
+    turn_left(35, 90);
     move_forward(40, 18);
 
     // move_backward(25, .15);
-    turn_left(25, 90);
+    turn_left(35, 95);
 
     // go down ramp
     move_forward(25, 29);
@@ -255,19 +260,19 @@ void choose_airline() {
 
     // align with right wall
     turn_left(25, 45);
-    move_backward(25, 25);
+    move_backward(25, 10);
 
     // go up ramp
     move_forward(25, 3.5);
-    turn_right(25, 90);
+    turn_right(35, 90);
     // move_forward(40, 5+5.0+12.31+4.0);
-    move_forward(40, 6 + 12.31 + 5);
+    move_forward(40, 6 + 12.31 + 18);
 
     // drive near light
-    turn_left(25, 90);
+    turn_left(35, 90);
     // move_forward(25, 8.8);
     move_forward(25, 10);
-    turn_right(25, 90);
+    turn_right(35, 90);
 
     // go to light
     move_forward(25, 12 + 12);
@@ -276,34 +281,34 @@ void choose_airline() {
     move_backward(25, 4);
 
     // red light case (need to check cds cell values)
-    if (cdsCell.Value() < 0.5) {
-        turn_left(25, 90);
+    if (cdsCell.Value() < 0.6) {
+        turn_left(35, 90);
         move_forward(25, 15);
-        turn_right(25, 90);
+        turn_right(35, 90);
         move_forward(25, 14);
         move_backward(25, 4);
     }
 
     // blue light case (need to check cds cell values)
-    if (cdsCell.Value() > 0.5 && cdsCell.Value() < 0.9) {
-        turn_left(25, 90);
+    if (cdsCell.Value() > 0.65 && cdsCell.Value() < 0.9) {
+        turn_left(35, 90);
         move_forward(25, 6);
-        turn_right(25, 90);
+        turn_right(35, 90);
         move_forward(25, 14);
         move_backward(25, 4);
     }
 
-    arm_motor.SetPercent(50);
-    move_forward(25, 4);
-    move_backward(25, 4);
-    arm_motor.SetPercent(-50);
+    // arm_motor.SetPercent(50);
+    // move_forward(25, 4);
+    // move_backward(25, 4);
+    // arm_motor.SetPercent(-50);
 
     // align with left wall
-    turn_left(25, 90);
+    turn_left(35, 90);
     move_forward(40, 18);
 
     // move_backward(25, .15);
-    turn_left(25, 90);
+    turn_left(35, 90);
 
     // go down ramp
     move_forward(25, 29);
@@ -316,9 +321,9 @@ void fuel_airplane() {
         Sleep(5.0);
         arm_motor.SetPercent(-50);
     } else if (fuel_lever == 2) {
-        turn_left(25, 90);
+        turn_left(35, 90);
         move_forward(25, 1);
-        turn_right(25, 90);
+        turn_right(35, 90);
         arm_motor.SetPercent(50);
         move_backward(25, 2);
         arm_motor.SetPercent(50);
@@ -326,9 +331,9 @@ void fuel_airplane() {
         Sleep(5.0);
         arm_motor.SetPercent(-50);
     } else {
-        turn_left(25, 90);
+        turn_left(35, 90);
         move_forward(25, 2);
-        turn_right(25, 90);
+        turn_right(35, 90);
         arm_motor.SetPercent(50);
         move_backward(25, 2);
         arm_motor.SetPercent(50);
@@ -340,17 +345,17 @@ void fuel_airplane() {
 
 void luggage() {
     move_backward(25, 2);
-    turn_right(25, 90);
-    turn_right(25, 90);
+    turn_right(35, 90);
+    turn_right(35, 90);
     arm_motor.SetPercent(50);
     arm_motor.SetPercent(-50);
     move_backward(25, 4);
 }
 
 void passport_stamp() {
-    turn_right(25, 90);
+    turn_right(35, 90);
     move_forward(25, 17);
-    turn_left(25, 90);
+    turn_left(35, 90);
     move_forward(25, 30);
     arm_motor.SetPercent(50);
     move_forward(25, 1);
@@ -359,13 +364,13 @@ void passport_stamp() {
 
 void final_button() {
     move_backward(25, 4.7);
-    turn_left(25, 90);
+    turn_left(35, 90);
     move_forward(25, 19);
-    turn_left(25, 90);
+    turn_left(35, 90);
     move_forward(29, 19);
-    turn_right(25, 90);
+    turn_right(35, 90);
     move_forward(29, 21);
-    turn_right(25, 90);
+    turn_right(35, 90);
     move_forward(19, 21);
 }
 
