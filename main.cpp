@@ -231,7 +231,7 @@ void second_performance_checkpoint() {
     right_motor.SetPercent(25);
     bool red = false;
     resetCounts();
-    int inches = 15;
+    int inches = 18;
     int expectedCounts = (ONE_REVOLUTION_COUNTS * inches) / (2 * PI * WHEEL_RADIUS);
     while (getCounts() < expectedCounts) {
         showCDS();
@@ -253,7 +253,7 @@ void second_performance_checkpoint() {
     
         // red light case
         if (red) {
-            move_backward(25, 10);
+            move_backward(25, 13);
             turn_right(35, 90);
             move_forward(25, 11);
             turn_left(35, 100);
@@ -261,7 +261,7 @@ void second_performance_checkpoint() {
             move_backward(25, 4);
             // blue light case
         } else {
-            move_backward(25, 2);
+            move_backward(25, 5);
             turn_right(35, 90);
             move_forward(25, 4);
             turn_left(35, 90);
