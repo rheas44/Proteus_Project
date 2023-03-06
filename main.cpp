@@ -4,6 +4,7 @@
 #include <FEHMotor.h>
 #include <FEHRPS.h>
 #include <FEHSD.h>
+#include <cstdlib>
 
 // Number of points of interest (i.e. A, B, C, D)
 #define NUM_POINTS_OF_INTEREST 4
@@ -17,11 +18,11 @@
 
 /* Defines for how long each pulse should be and at what motor power. 
 These value will normally be small, but you should play around with the values to find what works best */
-#define PULSE_TIME <ADD CODE HERE>
-#define PULSE_POWER <ADD CODE HERE>
+#define PULSE_TIME 0.5
+#define PULSE_POWER 10
 
 // Define for the motor power while driving (not pulsing)
-#define POWER <ADD CODE HERE>
+#define POWER 25
 
 #define HEADING_TOLERANCE 2
 
@@ -186,14 +187,14 @@ void check_x(float x_coordinate, int orientation)
     }
 
     // Check if receiving proper RPS coordinates and whether the robot is within an acceptable range
-    while (<ADD CODE HERE>&& (RPS.X() < x_coordinate - 1 || RPS.X() > x_coordinate + 1))
+    while (RPS.X() >= 0 && (RPS.X() < x_coordinate - 1 || RPS.X() > x_coordinate + 1))
     {
-        if (<ADD CODE HERE>)
+        if (RPS.X() < x_coordinate - 1)
         {
             // Pulse the motors for a short duration in the correct direction
             pulse_forward(-power, PULSE_TIME);
         }
-        else if (<ADD CODE HERE>)
+        else if (RPS.X() > x_coordinate + 1)
         {
             // Pulse the motors for a short duration in the correct direction
             pulse_forward(power, PULSE_TIME);
@@ -215,14 +216,14 @@ void check_y(float y_coordinate, int orientation)
     }
 
     // Check if receiving proper RPS coordinates and whether the robot is within an acceptable range
-    while (<ADD CODE HERE> && (RPS.Y() < y_coordinate - 1 || RPS.Y() > y_coordinate + 1))
+    while (RPS.Y() >= 0 && (RPS.Y() < y_coordinate - 1 || RPS.Y() > y_coordinate + 1))
     {
-        if (<ADD CODE HERE>)
+        if (RPS.Y() < y_coordinate - 1)
         {
             // Pulse the motors for a short duration in the correct direction
             pulse_forward(-power, PULSE_TIME);
         }
-        else if (<ADD CODE HERE>)
+        else if (RPS.Y() > y_coordinate + 1)
         {
             // Pulse the motors for a short duration in the correct direction
             pulse_forward(power, PULSE_TIME);
@@ -247,6 +248,14 @@ void check_heading(float heading)
         2. Check if the robot is within the desired threshold for the heading based on the orientation
         3. Pulse in the correct direction based on the orientation
     */
+    while (std::abs(RPS.Heading() - heading) > 2) {
+        if (RPS.Heading() < heading) {
+            pulse_counterclockwise(10, 0.5);
+        } else {
+            pulse_counterclockwise(-10, 0.5);
+        }
+    }
+
 }
 
 int main(void)
