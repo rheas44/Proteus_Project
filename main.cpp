@@ -303,6 +303,7 @@ void second_performance_checkpoint() {
    
         // red light case
         if (red) {
+            LCD.WriteLine("RED");
             move_backward(25, 13);
             turn_right(35, 90);
             move_forward(25, 12);
@@ -311,6 +312,7 @@ void second_performance_checkpoint() {
             move_backward(25, 4);
             // blue light case
         } else {
+            LCD.WriteLine("BLUE");
             move_backward(25, 5);
             turn_right(35, 90);
             move_forward(25, 4);
