@@ -286,7 +286,7 @@ void second_performance_checkpoint() {
         right_motor.SetPercent(25);
         showCDS();
         gui.textLine("cds", cdsCell.Value(), 1);
-        if (cdsCell.Value() < 0.5) {
+        if (cdsCell.Value() < 1.0) {
             red = true;    
         }
     }
