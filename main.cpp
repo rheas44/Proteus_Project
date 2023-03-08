@@ -63,6 +63,7 @@ void updateGui() {
     if (TimeNow() > nextShowCDSTime) {
         textLine(colorString, 12);
         textLine("cds", cdsCell.Value(), 13);
+        textLine("x", RPS.X(), 11);
         nextShowCDSTime = TimeNow() + 0.25;
     }
 }
@@ -268,8 +269,9 @@ void second_performance_checkpoint() {
     // drive near light
     Sleep(0.25);
     turn_left(35, 90);
+    move_backward(50, 10);
     // move_forward(25, 8.8);
-    move_forward(25, 18.5);
+    move_forward(25, 22.75);
     Sleep(0.25);
     turn_right(35, 90);
     left_motor.SetPercent(25);
@@ -279,7 +281,7 @@ void second_performance_checkpoint() {
     int inches = 18;
     int expectedCounts = (ONE_REVOLUTION_COUNTS * inches) / (2 * PI * WHEEL_RADIUS);
     while (getCounts() < expectedCounts) {
-        while (cdsCell.Value() < 1.0) {
+        while (cdsCell.Value() < 1.05) {
             left_motor.SetPercent(15);
             right_motor.SetPercent(15);
         }
@@ -287,7 +289,7 @@ void second_performance_checkpoint() {
         right_motor.SetPercent(25);
         updateGui();
         textLine("cds", cdsCell.Value(), 1);
-        if (cdsCell.Value() < 1.5) {
+        if (cdsCell.Value() < 1.05) {
             red = true;
         }
     }
