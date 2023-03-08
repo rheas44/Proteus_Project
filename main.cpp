@@ -255,21 +255,26 @@ void second_performance_checkpoint() {
 
 
     // align with right wall
-    turn_left(25, 45);
+    Sleep(0.25);
+    turn_left(35, 45);
     move_backward(35, 15);
 
 
     // go up ramp
     move_forward(25, 3.5);
+    Sleep(0.25);
     turn_right(35, 90);
     // move_forward(40, 5+5.0+12.31+4.0);
     move_forward(40, 6 + 12.31 + 10);
+    Sleep(0.25);
 
 
     // drive near light
-    turn_left(25, 100);
+    Sleep(0.25);
+    turn_left(35, 90);
     // move_forward(25, 8.8);
-    move_forward(25, 17.5);
+    move_forward(25, 18.5);
+    Sleep(0.25);
     turn_right(35, 90);
     left_motor.SetPercent(25);
     right_motor.SetPercent(25);
@@ -286,7 +291,7 @@ void second_performance_checkpoint() {
         right_motor.SetPercent(25);
         showCDS();
         gui.textLine("cds", cdsCell.Value(), 1);
-        if (cdsCell.Value() < 1.0) {
+        if (cdsCell.Value() < 1.5) {
             red = true;    
         }
     }
@@ -303,19 +308,25 @@ void second_performance_checkpoint() {
    
         // red light case
         if (red) {
-            LCD.WriteLine("RED");
-            move_backward(25, 13);
+            LCD.Clear();
+            LCD.Write("RED");
+            move_backward(25, 15);
+            Sleep(0.25);
             turn_right(35, 90);
-            move_forward(25, 12);
-            turn_left(35, 100);
+            move_forward(25, 10.5);
+            Sleep(0.25);
+            turn_left(35, 90);
             move_forward(25, 20);
             move_backward(25, 4);
             // blue light case
         } else {
-            LCD.WriteLine("BLUE");
+            LCD.Clear();
+            LCD.Write("BLUE");
             move_backward(25, 5);
+            Sleep(0.25);
             turn_right(35, 90);
             move_forward(25, 4);
+            Sleep(0.25);
             turn_left(35, 90);
             move_forward(25, 14);
             move_backward(25, 4);
@@ -327,12 +338,15 @@ void second_performance_checkpoint() {
 
 
     // align with left wall
+    Sleep(0.25);
     turn_left(35, 90);
     move_forward(40, 18);
+    move_forward(60, 5);
 
 
     // move_backward(25, .15);
-    turn_left(35, 95);
+    Sleep(0.25);
+    turn_left(25, 90);
 
 
     // go down ramp
