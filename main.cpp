@@ -43,38 +43,34 @@ constexpr double PI = 3.14159;
 constexpr int ONE_REVOLUTION_COUNTS = 318;
 
 
-struct Gui {
-    void textLine(std::string s, int row) {
-        int width = 26;
-        if (s.length() < width) {
-            s.append(width - s.length(), ' ');
-        }
-        LCD.WriteRC(s.c_str(), row, 0);
+void textLine(std::string s, int row) {
+    int width = 26;
+    if (s.length() < width) {
+        s.append(width - s.length(), ' ');
     }
+    LCD.WriteRC(s.c_str(), row, 0);
+}
 
 
-    void textLine(std::string s, double value, int row) {
-        textLine((s + ": " + std::to_string(value)), row);
+void textLine(std::string s, double value, int row) {
+    textLine((s + ": " + std::to_string(value)), row);
+}
+
+std::string colorString = "color: ?";
+
+
+void updateGui() {
+    if (TimeNow() > nextShowCDSTime) {
+        textLine(colorString, 12);
+        textLine("cds", cdsCell.Value(), 13);
+        nextShowCDSTime = TimeNow() + 0.25;
     }
-};
-
-
-Gui gui;
-
+}
 
 void resetCounts() {
     left_encoder.ResetCounts();
     right_encoder.ResetCounts();
 }
-
-
-void showCDS() {
-    if (TimeNow() > nextShowCDSTime) {
-        gui.textLine("cds", cdsCell.Value(), 13);
-        nextShowCDSTime = TimeNow() + 0.25;
-    }
-}
-
 
 int getCounts() {
     return (left_encoder.Counts() + right_encoder.Counts())/2;
@@ -83,11 +79,11 @@ int getCounts() {
 
 void wait_for_light() {
     double nextTime = 0;
-    gui.textLine("waiting for light", 0);
+    textLine("waiting for light", 0);
     while (cdsCell.Value() >= 1.0) {
         if (TimeNow() > nextTime) {
-            gui.textLine("cds: ", cdsCell.Value(), 1);
-            gui.textLine("expected: ", 1.5, 2);
+            textLine("cds: ", cdsCell.Value(), 1);
+            textLine("expected: ", 1.5, 2);
             nextTime = TimeNow() + .1;
         }
     }
@@ -100,7 +96,7 @@ const double TIME_OUT = 10.0;
 void move_forward(int percent, double inches)
 {
     LCD.Clear();
-    gui.textLine(percent > 0 ? "move forward" : "move backward", 0);
+    textLine(percent > 0 ? "move forward" : "move backward", 0);
     // Sleep(1.0);
     double startTime = TimeNow();
     int expectedCounts = (ONE_REVOLUTION_COUNTS * inches) / (2 * PI * WHEEL_RADIUS);
@@ -117,7 +113,7 @@ void move_forward(int percent, double inches)
     int oldCounts = -10;
     int numberLowChanges = 0;
     while(true) {
-        showCDS();
+        updateGui();
         if (TimeNow() > startTime+TIME_OUT) {
             break;
         }
@@ -131,12 +127,12 @@ void move_forward(int percent, double inches)
         if (numberLowChanges > 16) {
             break;
         }
-        gui.textLine("expected counts", expectedCounts, 4);
+        textLine("expected counts", expectedCounts, 4);
         if (TimeNow() > nextTime) {
-            gui.textLine("counts", counts, 1);
-            gui.textLine("distance", ((double)counts / expectedCounts) * inches, 2);
+            textLine("counts", counts, 1);
+            textLine("distance", ((double)counts / expectedCounts) * inches, 2);
             oldCounts = counts;
-            gui.textLine("time", TimeNow() - startTime, 3);
+            textLine("time", TimeNow() - startTime, 3);
             nextTime = TimeNow() + .25;
         }
     }
@@ -157,7 +153,7 @@ void move_backward(int percent, double inches) {
 void turn_right(int percent, double degrees)
 {
     LCD.Clear();
-    gui.textLine(percent < 0 ? "turn left" : "turn right", 0);
+    textLine(percent < 0 ? "turn left" : "turn right", 0);
     // Sleep(1.0);
 
 
@@ -175,12 +171,12 @@ void turn_right(int percent, double degrees)
     double nextTime = 0;
     double startTime = TimeNow();
     while(true) {
-        showCDS();
+        updateGui();
         int counts = getCounts();
         if (TimeNow() > nextTime) {
-            gui.textLine("counts", counts, 1);
-            gui.textLine("expected", expectedCounts, 2);
-            gui.textLine("time", TimeNow() - startTime, 3);
+            textLine("counts", counts, 1);
+            textLine("expected", expectedCounts, 2);
+            textLine("time", TimeNow() - startTime, 3);
             if (TimeNow() > startTime + TIME_OUT) {
                 break;
             }
@@ -289,10 +285,10 @@ void second_performance_checkpoint() {
         }
         left_motor.SetPercent(25);
         right_motor.SetPercent(25);
-        showCDS();
-        gui.textLine("cds", cdsCell.Value(), 1);
+        updateGui();
+        textLine("cds", cdsCell.Value(), 1);
         if (cdsCell.Value() < 1.5) {
-            red = true;    
+            red = true;
         }
     }
     left_motor.SetPercent(0);
@@ -301,15 +297,14 @@ void second_performance_checkpoint() {
     // while (cdsCell.Value() >= 1.0) {
     //     left_motor.SetPercent(25);
     //     right_motor.SetPercent(25);
-    // }    
+    // }
     //     left_motor.SetPercent(0);
     //     right_motor.SetPercent(0);
     //     // red light case (need to check cds cell values)
-   
-        // red light case
+
         if (red) {
-            LCD.Clear();
-            LCD.Write("RED");
+            // red light case
+            colorString = "color: RED";
             move_backward(25, 15);
             Sleep(0.25);
             turn_right(35, 90);
@@ -318,10 +313,9 @@ void second_performance_checkpoint() {
             turn_left(35, 90);
             move_forward(25, 20);
             move_backward(25, 4);
-            // blue light case
         } else {
-            LCD.Clear();
-            LCD.Write("BLUE");
+            // blue light case
+            colorString = "color: BLUE";
             move_backward(25, 5);
             Sleep(0.25);
             turn_right(35, 90);
@@ -525,9 +519,9 @@ int main(void)
     // RPS.InitializeTouchMenu();
 
 
-    gui.textLine("Touch the screen", 0);
+    textLine("Touch the screen", 0);
     while(!LCD.Touch(&touchX,&touchY)) {
-        gui.textLine("cds", cdsCell.Value(), 1);
+        textLine("cds", cdsCell.Value(), 1);
         Sleep(.1);
     }; //Wait for screen to be pressed
     while(LCD.Touch(&touchX,&touchY)); //Wait for screen to be unpressed
@@ -544,30 +538,7 @@ int main(void)
 
     second_performance_checkpoint();
 
-
-    // arm_motor.SetPercent(-50);
-
-
-    // Sleep(10.0);
-
-
-    // arm_motor.Stop();
-
-
-    // Sleep(1.0);
-
-
-    // arm_motor.SetPercent(50);
-
-
-    // Sleep(10.0);
-
-
-    // arm_motor.Stop();
-
-
-
-
-    return 0;
+    // don't turn off screen until power button pressed
+    while (true);
 }
 
