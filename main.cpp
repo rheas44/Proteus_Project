@@ -10,12 +10,14 @@
 
 const int LCD_WIDTH = 320;
 const int LCD_HEIGHT = 240;
-
+const int RPS_GET_TIMES = 10;
+const int CHECK_TIMES = 3;
+const double CHECK_POWER = 25;
 
 double leftMultiplier = 1;
 
 
-double nextShowCDSTime = 0;
+double nextShowGuiTime = 0;
 
 
 //Declarations for encoders & motors
@@ -60,11 +62,13 @@ std::string colorString = "color: ?";
 
 
 void updateGui() {
-    if (TimeNow() > nextShowCDSTime) {
+    if (TimeNow() > nextShowGuiTime) {
+        textLine("x", cdsCell.Value(), 9);
+        textLine("y", cdsCell.Value(), 10);
+        textLine("h", cdsCell.Value(), 11);
         textLine(colorString, 12);
         textLine("cds", cdsCell.Value(), 13);
-        textLine("x", RPS.X(), 11);
-        nextShowCDSTime = TimeNow() + 0.25;
+        nextShowGuiTime = TimeNow() + 0.25;
     }
 }
 
@@ -196,6 +200,78 @@ void turn_right(int percent, double degrees)
 void turn_left(int percent, double degrees)
 {
     turn_right(-percent, degrees);
+}
+
+double rps_heading() {
+    for (int i = 0; i < RPS_GET_TIMES; i++) {
+        Sleep(.3);
+        double heading = RPS.Heading();
+        if (heading >= 0) {
+            return heading;
+        }
+    }
+    return -1;
+}
+
+double rps_x() {
+    for (int i = 0; i < RPS_GET_TIMES; i++) {
+        Sleep(.3);
+        double x = RPS.X();
+        if (x >= 0) {
+            return x;
+        }
+    }
+    return -1;
+}
+
+double rps_y() {
+    for (int i = 0; i < RPS_GET_TIMES; i++) {
+        Sleep(.3);
+        double y = RPS.Y();
+        if (y >= 0) {
+            return y;
+        }
+    }
+    return -1;
+}
+
+void check_heading(double targetHeading) {
+    for (int i = 0; i < CHECK_TIMES; i++) {
+        double currentHeading = rps_heading();
+        if (currentHeading < 0) {
+            return;
+        }
+        double difference = targetHeading - currentHeading;
+        if (difference < -180) {
+            difference += 360;
+        }
+        if (difference > 180) {
+            difference -= 360;
+        }
+        turn_right(CHECK_POWER, difference);
+    }
+}
+
+void check_x(double targetX, double orientation) {
+    for (int i = 0; i < CHECK_TIMES; i++) {
+        double currentX = rps_x();
+        if (currentX < 0) {
+            return;
+        }
+        double difference = targetX - currentX;
+        move_forward(CHECK_POWER*orientation, difference);
+    }
+}
+
+void check_y(double targetY, double orientation) {
+    for (int i = 0; i < CHECK_TIMES; i++) {
+        double currentY = rps_y();
+        if (currentY < 0) {
+            return;
+        }
+        double difference = targetY - currentY;
+        move_forward(CHECK_POWER*orientation, difference);
+    }
 }
 
 
@@ -518,15 +594,15 @@ int main(void)
     LCD.SetFontColor(WHITE);
 
 
-    // RPS.InitializeTouchMenu();
+    RPS.InitializeTouchMenu();
 
 
-    textLine("Touch the screen", 0);
-    while(!LCD.Touch(&touchX,&touchY)) {
-        textLine("cds", cdsCell.Value(), 1);
-        Sleep(.1);
-    }; //Wait for screen to be pressed
-    while(LCD.Touch(&touchX,&touchY)); //Wait for screen to be unpressed
+    // textLine("Touch the screen", 0);
+    // while(!LCD.Touch(&touchX,&touchY)) {
+    //     textLine("cds", cdsCell.Value(), 1);
+    //     Sleep(.1);
+    // }; //Wait for screen to be pressed
+    // while(LCD.Touch(&touchX,&touchY)); //Wait for screen to be unpressed
     LCD.Clear();
 
 
