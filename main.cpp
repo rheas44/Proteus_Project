@@ -285,27 +285,6 @@ void check_y(float y_coordinate, int orientation)
  */
 void check_heading(float heading)
 {
-<<<<<<< HEAD
-//     // You will need to fill out this one yourself and take into account
-//     // checking for proper RPS data and the edge conditions
-//     //(when you want the robot to go to 0 degrees or close to 0 degrees)
-
-//     /*
-//         SUGGESTED ALGORITHM:
-//         1. Check the current orientation of the QR code and the desired orientation of the QR code
-//         2. Check if the robot is within the desired threshold for the heading based on the orientation
-//         3. Pulse in the correct direction based on the orientation
-//     */
-//      //if the degree is between 0 and 90 and desired heading is between 270 and 360
-    if (heading >= 270 && RPS.Heading() <= 90) {
-        while (!(RPS.Heading() + 360 > heading - HEADING_TOLERANCE && RPS.Heading() + 360 < heading + HEADING_TOLERANCE)) {
-             pulse_counterclockwise(-20, 0.5);
-        }
-        // if the degree is between 270 and 360 and desired heading is between 0 and 90
-    } else if (heading <= 90 && RPS.Heading() >= 270) {
-        while (!(RPS.Heading() > heading + 360 - HEADING_TOLERANCE && RPS.Heading() < heading + 360 + HEADING_TOLERANCE)) {
-             pulse_counterclockwise(20, 0.5);
-=======
     textLine("check_heading", 0);
     while (true) {
         double current = rps_heading();
@@ -314,11 +293,10 @@ void check_heading(float heading)
             break;
         }
         double difference = heading - current;
-        if (difference < -270) {
+        if (difference < -180) {
             difference += 360;
->>>>>>> 40a5e11 (make rps work better?)
         }
-        if (difference > 270) {
+        if (difference > 180) {
             difference -= 360;
         }
         textLine("current", current, 2);
@@ -328,9 +306,9 @@ void check_heading(float heading)
             break;
         }
         if (difference < 0) {
-            pulse_counterclockwise(-20, 0.5);
+            pulse_counterclockwise(-20, 0.25);
         } else {
-            pulse_counterclockwise(20, 0.5);
+            pulse_counterclockwise(20, 0.25);
         }
     }
 }
