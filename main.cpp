@@ -18,8 +18,8 @@
 
 /* Defines for how long each pulse should be and at what motor power. 
 These value will normally be small, but you should play around with the values to find what works best */
-#define PULSE_TIME 0.5
-#define PULSE_POWER 10
+#define PULSE_TIME 0.25
+#define PULSE_POWER 25
 
 // Define for the motor power while driving (not pulsing)
 #define POWER 35
@@ -244,41 +244,41 @@ void check_y(float y_coordinate, int orientation)
  */
 void check_heading(float heading)
 {
-    // You will need to fill out this one yourself and take into account
-    // checking for proper RPS data and the edge conditions
-    //(when you want the robot to go to 0 degrees or close to 0 degrees)
+//     // You will need to fill out this one yourself and take into account
+//     // checking for proper RPS data and the edge conditions
+//     //(when you want the robot to go to 0 degrees or close to 0 degrees)
 
-    /*
-        SUGGESTED ALGORITHM:
-        1. Check the current orientation of the QR code and the desired orientation of the QR code
-        2. Check if the robot is within the desired threshold for the heading based on the orientation
-        3. Pulse in the correct direction based on the orientation
-    */
-     //if the degree is between 0 and 90 and desired heading is between 270 and 360
+//     /*
+//         SUGGESTED ALGORITHM:
+//         1. Check the current orientation of the QR code and the desired orientation of the QR code
+//         2. Check if the robot is within the desired threshold for the heading based on the orientation
+//         3. Pulse in the correct direction based on the orientation
+//     */
+//      //if the degree is between 0 and 90 and desired heading is between 270 and 360
     if (heading >= 270 && RPS.Heading() <= 90) {
         while (!(RPS.Heading() + 360 > heading - HEADING_TOLERANCE && RPS.Heading() + 360 < heading + HEADING_TOLERANCE)) {
-             pulse_counterclockwise(-10, 0.5);
+             pulse_counterclockwise(-20, 0.5);
         }
         // if the degree is between 270 and 360 and desired heading is between 0 and 90
     } else if (heading <= 90 && RPS.Heading() >= 270) {
         while (!(RPS.Heading() > heading + 360 - HEADING_TOLERANCE && RPS.Heading() < heading + 360 + HEADING_TOLERANCE)) {
-             pulse_counterclockwise(10, 0.5);
+             pulse_counterclockwise(20, 0.5);
         }
     } else {
          while (std::abs(RPS.Heading() - heading) > HEADING_TOLERANCE) {
             if (RPS.Heading() < heading) {
-                pulse_counterclockwise(10, 0.5);
+                pulse_counterclockwise(20, 0.5);
             } else if (RPS.Heading() > heading) {
-                pulse_counterclockwise(-10, 0.5);
+                pulse_counterclockwise(-20, 0.5);
             }
         }
     }
- 
-
 }
 
-int main(void)
-{
+// }
+
+ int main(void)
+ {
     float touch_x, touch_y;
 
 
