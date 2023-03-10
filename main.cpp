@@ -425,6 +425,68 @@ void second_performance_checkpoint() {
     move_forward(25, 29);
 }
 
+void raiseArm() {
+    arm_motor.SetPercent(-100);
+    Sleep(2.0);
+    arm_motor.Stop();
+}
+
+void lowerArm() {
+    arm_motor.SetPercent(100);
+    Sleep(2.0);
+    arm_motor.Stop();
+}
+
+void third_performance_checkpoint() {
+    // go forward
+    move_forward(25, 9.5);
+
+
+    // align with right wall
+    Sleep(0.25);
+    turn_left(35, 45);
+    move_backward(35, 15);
+
+
+    // go up ramp
+    move_forward(25, 3.5);
+    Sleep(0.25);
+    turn_right(35, 90);
+    // move_forward(40, 5+5.0+12.31+4.0);
+    move_forward(40, 6 + 12.31 + 10);
+    Sleep(0.25);
+    turn_left(40, 90);
+    move_forward(35, 35);
+    // move_backward(25, .15);
+    Sleep(0.25);
+    turn_left(25, 90);
+
+
+    // go down ramp
+    move_forward(25, 29);
+    move_backward(25, 5);
+    turn_left(25, 90);
+    move_backward(25, 10);
+    double distance;
+    if (value == 0) {
+        distance = 1.5;
+    } else if (value == 1) {
+        distance = 4.5;
+    } else if (value == 2) {
+        distance = 7.5;
+    }
+
+    move_forward(25, distance);
+    turn_right(25, 90);
+    move_forward(25, 5);
+    raiseArm();
+    Sleep(5.0);
+    move_backward(25, 5);
+    move_forward(25, 5);
+    lowerArm();    
+}
+
+
 
 void choose_airline() {
     // go forward
