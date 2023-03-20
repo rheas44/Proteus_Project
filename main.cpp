@@ -256,12 +256,12 @@ void check_heading(float heading)
 //     */
 //      //if the degree is between 0 and 90 and desired heading is between 270 and 360
     if (heading >= 270 && RPS.Heading() <= 90) {
-        while (!(RPS.Heading() > heading - HEADING_TOLERANCE && RPS.Heading() < heading + HEADING_TOLERANCE)) {
+        while (!(RPS.Heading() + 360 > heading - HEADING_TOLERANCE && RPS.Heading() + 360 < heading + HEADING_TOLERANCE)) {
              pulse_counterclockwise(-20, 0.5);
         }
         // if the degree is between 270 and 360 and desired heading is between 0 and 90
     } else if (heading <= 90 && RPS.Heading() >= 270) {
-        while (!(RPS.Heading() > heading - HEADING_TOLERANCE && RPS.Heading() < heading + HEADING_TOLERANCE)) {
+        while (!(RPS.Heading() > heading + 360 - HEADING_TOLERANCE && RPS.Heading() < heading + 360 + HEADING_TOLERANCE)) {
              pulse_counterclockwise(20, 0.5);
         }
     } else {
