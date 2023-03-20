@@ -5,6 +5,7 @@
 #include <FEHRPS.h>
 #include <FEHSD.h>
 #include <cstdlib>
+#include <string>
 
 // Number of points of interest (i.e. A, B, C, D)
 #define NUM_POINTS_OF_INTEREST 4
@@ -16,7 +17,7 @@
 #define COUNTS_PER_INCH 40.5
 #define COUNTS_PER_DEGREE 2.48
 
-/* Defines for how long each pulse should be and at what motor power. 
+/* Defines for how long each pulse should be and at what motor power.
 These value will normally be small, but you should play around with the values to find what works best */
 #define PULSE_TIME 0.25
 #define PULSE_POWER 25
@@ -34,11 +35,59 @@ Examples:
 #define PLUS 0
 #define MINUS 1
 
+const int RPS_GET_TIMES = 10;
+
+double rps_heading() {
+    for (int i = 0; i < RPS_GET_TIMES; i++) {
+        Sleep(.3);
+        double heading = RPS.Heading();
+        if (heading >= 0) {
+            return heading;
+        }
+    }
+    return -1;
+}
+
+double rps_x() {
+    for (int i = 0; i < RPS_GET_TIMES; i++) {
+        Sleep(.3);
+        double x = RPS.X();
+        if (x >= 0) {
+            return x;
+        }
+    }
+    return -1;
+}
+
+double rps_y() {
+    for (int i = 0; i < RPS_GET_TIMES; i++) {
+        Sleep(.3);
+        double y = RPS.Y();
+        if (y >= 0) {
+            return y;
+        }
+    }
+    return -1;
+}
+
 // Declarations for encoders & motors
 DigitalEncoder right_encoder(FEHIO::P2_0);
 DigitalEncoder left_encoder(FEHIO::P2_1);
 FEHMotor right_motor(FEHMotor::Motor1, 9.0);
 FEHMotor left_motor(FEHMotor::Motor0, 9.0);
+
+void textLine(std::string s, int row) {
+    int width = 26;
+    if (s.length() < width) {
+        s.append(width - s.length(), ' ');
+    }
+    LCD.WriteRC(s.c_str(), row, 0);
+}
+
+
+void textLine(std::string s, double value, int row) {
+    textLine((s + ": " + std::to_string(value)), row);
+}
 
 void set_points_of_interest()
 {
@@ -179,27 +228,26 @@ void turn_counterclockwise(int percent, int counts)
  */
 void check_x(float x_coordinate, int orientation)
 {
-    // Determine the direction of the motors based on the orientation of the QR code
-    int power = PULSE_POWER;
-    if (orientation == MINUS)
-    {
-        power = -PULSE_POWER;
-    }
-
-    // Check if receiving proper RPS coordinates and whether the robot is within an acceptable range
-    while (x_coordinate >= 0 && (RPS.X() < x_coordinate - 1 || RPS.X() > x_coordinate + 1))
-    {
-        if (RPS.X() > x_coordinate)
-        {
-            // Pulse the motors for a short duration in the correct direction
-            pulse_forward(-power, PULSE_TIME);
+    textLine("check_x", 0);
+    while (true) {
+        double current = rps_x();
+        if (current < 0) {
+            textLine("failed rps", 10);
+            break;
         }
-        else if (RPS.X() < x_coordinate)
-        {
-            // Pulse the motors for a short duration in the correct direction
-            pulse_forward(power, PULSE_TIME);
+        double difference = x_coordinate - current;
+        textLine("current", current, 2);
+        textLine("target", x_coordinate, 3);
+        textLine("diff", difference, 4);
+        if (difference >= -1 && difference <= -1) {
+            break;
         }
-        Sleep(RPS_WAIT_TIME_IN_SEC);
+        double multipler = orientation == PLUS ? 1 : -1;
+        if (difference < 0) {
+            pulse_forward(multipler * PULSE_POWER, PULSE_TIME);
+        } else {
+            pulse_forward(-multipler * PULSE_POWER, PULSE_TIME);
+        }
     }
 }
 
@@ -208,34 +256,27 @@ void check_x(float x_coordinate, int orientation)
  */
 void check_y(float y_coordinate, int orientation)
 {
-    // Determine the direction of the motors based on the orientation of the QR code
-    int power = PULSE_POWER;
-    if (orientation == MINUS)
-    {
-        power = -PULSE_POWER;
-    }
-
-    // Check if receiving proper RPS coordinates and whether the robot is within an acceptable range
-    while (y_coordinate >= 0 && (RPS.Y() < y_coordinate - 1 || RPS.Y() > y_coordinate + 1))
-    {
-        if (RPS.Y() > y_coordinate)
-        {
-            LCD.WriteLine("moving backward");
-            LCD.WriteLine(RPS.Y());
-            // Pulse the motors for a short duration in the correct direction
-            pulse_forward(-power, PULSE_TIME);
+    textLine("check_y", 0);
+    while (true) {
+        double current = rps_y();
+        if (current < 0) {
+            textLine("failed rps", 10);
+            break;
         }
-        else if (RPS.Y() < y_coordinate)
-        {
-            LCD.WriteLine("moving forward");
-            LCD.WriteLine(RPS.Y());
-            // Pulse the motors for a short duration in the correct direction
-            pulse_forward(power, PULSE_TIME);
+        double difference = y_coordinate - current;
+        textLine("current", current, 2);
+        textLine("target", y_coordinate, 3);
+        textLine("diff", difference, 4);
+        if (difference >= -1 && difference <= -1) {
+            break;
         }
-        Sleep(RPS_WAIT_TIME_IN_SEC);
+        double multipler = orientation == PLUS ? 1 : -1;
+        if (difference < 0) {
+            pulse_forward(multipler * PULSE_POWER, PULSE_TIME);
+        } else {
+            pulse_forward(-multipler * PULSE_POWER, PULSE_TIME);
+        }
     }
-
-    LCD.WriteLine("Stopped while loop");
 }
 
 
@@ -244,6 +285,7 @@ void check_y(float y_coordinate, int orientation)
  */
 void check_heading(float heading)
 {
+<<<<<<< HEAD
 //     // You will need to fill out this one yourself and take into account
 //     // checking for proper RPS data and the edge conditions
 //     //(when you want the robot to go to 0 degrees or close to 0 degrees)
@@ -263,14 +305,32 @@ void check_heading(float heading)
     } else if (heading <= 90 && RPS.Heading() >= 270) {
         while (!(RPS.Heading() > heading + 360 - HEADING_TOLERANCE && RPS.Heading() < heading + 360 + HEADING_TOLERANCE)) {
              pulse_counterclockwise(20, 0.5);
+=======
+    textLine("check_heading", 0);
+    while (true) {
+        double current = rps_heading();
+        if (current < 0) {
+            textLine("failed rps", 10);
+            break;
         }
-    } else {
-         while (std::abs(RPS.Heading() - heading) > HEADING_TOLERANCE) {
-            if (RPS.Heading() < heading) {
-                pulse_counterclockwise(20, 0.5);
-            } else if (RPS.Heading() > heading) {
-                pulse_counterclockwise(-20, 0.5);
-            }
+        double difference = heading - current;
+        if (difference < -270) {
+            difference += 360;
+>>>>>>> 40a5e11 (make rps work better?)
+        }
+        if (difference > 270) {
+            difference -= 360;
+        }
+        textLine("current", current, 2);
+        textLine("target", heading, 3);
+        textLine("diff", difference, 4);
+        if (difference >= -HEADING_TOLERANCE && difference <= HEADING_TOLERANCE) {
+            break;
+        }
+        if (difference < 0) {
+            pulse_counterclockwise(-20, 0.5);
+        } else {
+            pulse_counterclockwise(20, 0.5);
         }
     }
 }
@@ -289,88 +349,95 @@ void check_heading(float heading)
 
     RPS.InitializeTouchMenu();
 
-    set_points_of_interest();
+    while (true) {
+        textLine("Press screen", 0);
+        check_heading(0);
+        while (!LCD.Touch(&touch_x, &touch_y));
+        while (LCD.Touch(&touch_x, &touch_y));
+    }
+
+    // set_points_of_interest();
 
 
-    LCD.Clear();
-    LCD.WriteLine("Press Screen To Start Run");
-    while (!LCD.Touch(&touch_x, &touch_y));
-    while (LCD.Touch(&touch_x, &touch_y));
+    // LCD.Clear();
+    // LCD.WriteLine("Press Screen To Start Run");
+    // while (!LCD.Touch(&touch_x, &touch_y));
+    // while (LCD.Touch(&touch_x, &touch_y));
 
 
-    // COMPLETE CODE HERE TO READ SD CARD FOR LOGGED X AND Y DATA POINTS
-    FEHFile *fptr = SD.FOpen("RPS_POIs.txt", "r");
-    SD.FScanf(fptr, "%f%f", &A_x, &A_y);
-    SD.FScanf(fptr, "%f%f", &B_x, &B_y);
-    SD.FScanf(fptr, "%f%f", &C_x, &C_y);
-    SD.FScanf(fptr, "%f%f", &D_x, &D_y);
+    // // COMPLETE CODE HERE TO READ SD CARD FOR LOGGED X AND Y DATA POINTS
+    // FEHFile *fptr = SD.FOpen("RPS_POIs.txt", "r");
+    // SD.FScanf(fptr, "%f%f", &A_x, &A_y);
+    // SD.FScanf(fptr, "%f%f", &B_x, &B_y);
+    // SD.FScanf(fptr, "%f%f", &C_x, &C_y);
+    // SD.FScanf(fptr, "%f%f", &D_x, &D_y);
 
 
-    SD.FClose(fptr);
+    // SD.FClose(fptr);
 
 
-    // WRITE CODE HERE TO SET THE HEADING DEGREES AND COUNTS VALUES
-    A_heading = 180;
-    B_heading = 270;
-    C_heading = 90;
-    D_heading = 0;
+    // // WRITE CODE HERE TO SET THE HEADING DEGREES AND COUNTS VALUES
+    // A_heading = 180;
+    // B_heading = 270;
+    // C_heading = 90;
+    // D_heading = 0;
 
 
-    B_C_counts = 40.5*(B_x-C_x);
-    C_D_counts = 40.5*(D_x-C_x);
+    // B_C_counts = 40.5*(B_x-C_x);
+    // C_D_counts = 40.5*(D_x-C_x);
 
 
-    turn_90_counts = 40.5*((3.1415*6.5)/4);
-    turn_180_counts = 40.5*((3.1415*6.5)/2);
+    // turn_90_counts = 40.5*((3.1415*6.5)/4);
+    // turn_180_counts = 40.5*((3.1415*6.5)/2);
 
 
-   
-    // Open file pointer for writing
-    fptr = SD.FOpen("RESULTS.txt", "w");
+
+    // // Open file pointer for writing
+    // fptr = SD.FOpen("RESULTS.txt", "w");
 
 
-    // A --> B
-    check_y(B_y, PLUS);
-    check_heading(B_heading);
-    Sleep(1.0);
-   
-    // COMPLETE CODE HERE TO WRITE EXPECTED AND ACTUAL POSITION INFORMATION TO SD CARD
-    SD.FPrintf(fptr, "Expected B Position: %f %f %f\n", B_x, B_y, B_heading);
-    SD.FPrintf(fptr, "Actual B Position:   %f %f %f\n\n", RPS.X(), RPS.Y(), RPS.Heading());
+    // // A --> B
+    // check_y(B_y, PLUS);
+    // check_heading(B_heading);
+    // Sleep(1.0);
+
+    // // COMPLETE CODE HERE TO WRITE EXPECTED AND ACTUAL POSITION INFORMATION TO SD CARD
+    // SD.FPrintf(fptr, "Expected B Position: %f %f %f\n", B_x, B_y, B_heading);
+    // SD.FPrintf(fptr, "Actual B Position:   %f %f %f\n\n", RPS.X(), RPS.Y(), RPS.Heading());
 
 
-     //Log
+    //  //Log
 
 
-    // B --> C
-    move_forward(POWER, B_C_counts);
-    check_x(C_x, MINUS);
-    turn_counterclockwise(POWER,  turn_180_counts);
-    check_heading(C_heading);
-    Sleep(1.0);
+    // // B --> C
+    // move_forward(POWER, B_C_counts);
+    // check_x(C_x, MINUS);
+    // turn_counterclockwise(POWER,  turn_180_counts);
+    // check_heading(C_heading);
+    // Sleep(1.0);
 
 
-    // COMPLETE CODE HERE TO WRITE EXPECTED AND ACTUAL POSITION INFORMATION TO SD CARD
-    SD.FPrintf(fptr, "Expected C Position: %f %f %f\n", C_x, C_y, C_heading);
-    SD.FPrintf(fptr, "Actual C Position:   %f %f %f\n\n", RPS.X(), RPS.Y(), RPS.Heading());
+    // // COMPLETE CODE HERE TO WRITE EXPECTED AND ACTUAL POSITION INFORMATION TO SD CARD
+    // SD.FPrintf(fptr, "Expected C Position: %f %f %f\n", C_x, C_y, C_heading);
+    // SD.FPrintf(fptr, "Actual C Position:   %f %f %f\n\n", RPS.X(), RPS.Y(), RPS.Heading());
 
 
-    // C --> D
-    move_forward(POWER, C_D_counts);
-    check_x(D_x, PLUS);
-    turn_counterclockwise(-POWER, turn_90_counts);
-    check_heading(D_heading);
-    check_y(D_y, MINUS);
-    Sleep(1.0);
+    // // C --> D
+    // move_forward(POWER, C_D_counts);
+    // check_x(D_x, PLUS);
+    // turn_counterclockwise(-POWER, turn_90_counts);
+    // check_heading(D_heading);
+    // check_y(D_y, MINUS);
+    // Sleep(1.0);
 
 
-    // COMPLETE CODE HERE TO WRITE EXPECTED AND ACTUAL POSITION INFORMATION TO SD CARD
-    SD.FPrintf(fptr, "Expected D Position: %f %f %f\n", D_x, D_y, D_heading);
-    SD.FPrintf(fptr, "Actual D Position:   %f %f %f\n\n", RPS.X(), RPS.Y(), RPS.Heading());
-   
-    // Close file pointer
-    SD.FClose(fptr);
-    
+    // // COMPLETE CODE HERE TO WRITE EXPECTED AND ACTUAL POSITION INFORMATION TO SD CARD
+    // SD.FPrintf(fptr, "Expected D Position: %f %f %f\n", D_x, D_y, D_heading);
+    // SD.FPrintf(fptr, "Actual D Position:   %f %f %f\n\n", RPS.X(), RPS.Y(), RPS.Heading());
+
+    // // Close file pointer
+    // SD.FClose(fptr);
+
 
 
     // don't turn off screen
