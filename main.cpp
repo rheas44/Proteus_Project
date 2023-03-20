@@ -1,3 +1,4 @@
+#include "FEHServo.h"
 #include <FEHLCD.h>
 #include <FEHIO.h>
 #include <FEHUtility.h>
@@ -25,7 +26,7 @@ DigitalEncoder right_encoder(FEHIO::P0_0);
 DigitalEncoder left_encoder(FEHIO::P0_1);
 FEHMotor right_motor(FEHMotor::Motor0,9.0);
 FEHMotor left_motor(FEHMotor::Motor1,9.0);
-FEHMotor arm_motor(FEHMotor::Motor2, 4.5);
+FEHServo arm_servo(FEHServo::Servo0);
 
 
 //Declaration for analog input pin
@@ -426,15 +427,15 @@ void second_performance_checkpoint() {
 }
 
 void raiseArm() {
-    arm_motor.SetPercent(-100);
+    // arm_motor.SetPercent(-100);
     Sleep(2.0);
-    arm_motor.Stop();
+    // arm_motor.Stop();
 }
 
 void lowerArm() {
-    arm_motor.SetPercent(100);
+    // arm_motor.SetPercent(100);
     Sleep(2.0);
-    arm_motor.Stop();
+    // arm_motor.Stop();
 }
 
 void third_performance_checkpoint() {
@@ -468,13 +469,14 @@ void third_performance_checkpoint() {
     turn_left(25, 90);
     move_backward(25, 10);
     double distance;
-    if (value == 0) {
-        distance = 1.5;
-    } else if (value == 1) {
-        distance = 4.5;
-    } else if (value == 2) {
-        distance = 7.5;
-    }
+    distance = 1.5;
+    // if (value == 0) {
+    //     distance = 1.5;
+    // } else if (value == 1) {
+    //     distance = 4.5;
+    // } else if (value == 2) {
+    //     distance = 7.5;
+    // }
 
     move_forward(25, distance);
     turn_right(25, 90);
@@ -483,7 +485,7 @@ void third_performance_checkpoint() {
     Sleep(5.0);
     move_backward(25, 5);
     move_forward(25, 5);
-    lowerArm();    
+    lowerArm();
 }
 
 
@@ -562,30 +564,30 @@ void choose_airline() {
 
 void fuel_airplane() {
     if (fuel_lever == 1) {
-        arm_motor.SetPercent(50);
+        // arm_motor.SetPercent(50);
         move_backward(25, 2);
         Sleep(5.0);
-        arm_motor.SetPercent(-50);
+        // arm_motor.SetPercent(-50);
     } else if (fuel_lever == 2) {
         turn_left(35, 90);
         move_forward(25, 1);
         turn_right(35, 90);
-        arm_motor.SetPercent(50);
+        // arm_motor.SetPercent(50);
         move_backward(25, 2);
-        arm_motor.SetPercent(50);
+        // arm_motor.SetPercent(50);
         move_backward(25, 2);
         Sleep(5.0);
-        arm_motor.SetPercent(-50);
+        // arm_motor.SetPercent(-50);
     } else {
         turn_left(35, 90);
         move_forward(25, 2);
         turn_right(35, 90);
-        arm_motor.SetPercent(50);
+        // arm_motor.SetPercent(50);
         move_backward(25, 2);
-        arm_motor.SetPercent(50);
+        // arm_motor.SetPercent(50);
         move_backward(25, 2);
         Sleep(5.0);
-        arm_motor.SetPercent(-50);
+        // arm_motor.SetPercent(-50);
     }
 }
 
@@ -594,8 +596,8 @@ void luggage() {
     move_backward(25, 2);
     turn_right(35, 90);
     turn_right(35, 90);
-    arm_motor.SetPercent(50);
-    arm_motor.SetPercent(-50);
+    // arm_motor.SetPercent(50);
+    // arm_motor.SetPercent(-50);
     move_backward(25, 4);
 }
 
@@ -605,9 +607,9 @@ void passport_stamp() {
     move_forward(25, 17);
     turn_left(35, 90);
     move_forward(25, 30);
-    arm_motor.SetPercent(50);
+    // arm_motor.SetPercent(50);
     move_forward(25, 1);
-    arm_motor.SetPercent(-50);
+    // arm_motor.SetPercent(-50);
 }
 
 
@@ -655,16 +657,28 @@ int main(void)
     LCD.Clear(BLACK);
     LCD.SetFontColor(WHITE);
 
+    arm_servo.SetMin(750);
+    arm_servo.SetMax(1800);
 
-    RPS.InitializeTouchMenu();
+    arm_servo.SetDegree(0);
+
+    textLine("Touch the screen", 0);
+    while(!LCD.Touch(&touchX,&touchY)) {
+        Sleep(.1);
+    }; //Wait for screen to be pressed
+
+    arm_servo.SetDegree(90);
 
 
-    // textLine("Touch the screen", 0);
-    // while(!LCD.Touch(&touchX,&touchY)) {
-    //     textLine("cds", cdsCell.Value(), 1);
-    //     Sleep(.1);
-    // }; //Wait for screen to be pressed
-    // while(LCD.Touch(&touchX,&touchY)); //Wait for screen to be unpressed
+    // RPS.InitializeTouchMenu();
+
+
+    textLine("Touch the screen", 0);
+    while(!LCD.Touch(&touchX,&touchY)) {
+        textLine("cds", cdsCell.Value(), 1);
+        Sleep(.1);
+    }; //Wait for screen to be pressed
+    while(LCD.Touch(&touchX,&touchY)); //Wait for screen to be unpressed
     LCD.Clear();
 
 
