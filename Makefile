@@ -1,4 +1,4 @@
-FEHSD_DEVICE=/dev/sdb1
+FEHSD_DEVICE=/dev/sda1
 TARGET=Proteus
 export TARGET
 

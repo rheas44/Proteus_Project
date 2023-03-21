@@ -15,6 +15,11 @@ const int RPS_GET_TIMES = 10;
 const int CHECK_TIMES = 3;
 const double CHECK_POWER = 25;
 
+const double HEADING_DOWN = 0;
+const double HEADING_RIGHT = 90;
+const double HEADING_UP = 180;
+const double HEADING_LEFT = 270;
+
 double leftMultiplier = 1;
 
 
@@ -96,11 +101,16 @@ void wait_for_light() {
 }
 
 
+
 const double TIME_OUT = 10.0;
 
 
 void move_forward(int percent, double inches)
 {
+    if (inches < 0) {
+        move_forward(-percent, -inches);
+        return;
+    }
     LCD.Clear();
     textLine(percent > 0 ? "move forward" : "move backward", 0);
     // Sleep(1.0);
@@ -158,6 +168,11 @@ void move_backward(int percent, double inches) {
 
 void turn_right(int percent, double degrees)
 {
+    if (degrees < 0) {
+        turn_right(-percent, -degrees);
+        return;
+    }
+
     LCD.Clear();
     textLine(percent < 0 ? "turn left" : "turn right", 0);
     // Sleep(1.0);
@@ -203,52 +218,68 @@ void turn_left(int percent, double degrees)
     turn_right(-percent, degrees);
 }
 
+void sleep(double sec) {
+    double start = TimeNow();
+    while (TimeNow() < start + sec) {
+        updateGui();
+    }
+}
+
 double rps_heading() {
+    textLine("", 6);
     for (int i = 0; i < RPS_GET_TIMES; i++) {
-        Sleep(.3);
+        sleep(.3);
         double heading = RPS.Heading();
         if (heading >= 0) {
             return heading;
         }
     }
+    textLine("rps fail", 6);
     return -1;
 }
 
 double rps_x() {
+    textLine("", 6);
     for (int i = 0; i < RPS_GET_TIMES; i++) {
-        Sleep(.3);
+        sleep(.3);
         double x = RPS.X();
         if (x >= 0) {
             return x;
         }
     }
+    textLine("rps fail", 6);
     return -1;
 }
 
 double rps_y() {
+    textLine("", 6);
     for (int i = 0; i < RPS_GET_TIMES; i++) {
-        Sleep(.3);
+        sleep(.3);
         double y = RPS.Y();
         if (y >= 0) {
             return y;
         }
     }
+    textLine("rps fail", 6);
     return -1;
 }
 
 void check_heading(double targetHeading) {
     for (int i = 0; i < CHECK_TIMES; i++) {
         double currentHeading = rps_heading();
+        textLine("target h", targetHeading, 8);
+        textLine("current h", currentHeading, 7);
         if (currentHeading < 0) {
             return;
         }
-        double difference = targetHeading - currentHeading;
+        double difference = currentHeading - targetHeading;
         if (difference < -180) {
             difference += 360;
         }
         if (difference > 180) {
             difference -= 360;
         }
+        sleep(0.5);
         turn_right(CHECK_POWER, difference);
     }
 }
@@ -256,6 +287,8 @@ void check_heading(double targetHeading) {
 void check_x(double targetX, double orientation) {
     for (int i = 0; i < CHECK_TIMES; i++) {
         double currentX = rps_x();
+        textLine("target x", targetX, 8);
+        textLine("current x", currentX, 7);
         if (currentX < 0) {
             return;
         }
@@ -267,6 +300,8 @@ void check_x(double targetX, double orientation) {
 void check_y(double targetY, double orientation) {
     for (int i = 0; i < CHECK_TIMES; i++) {
         double currentY = rps_y();
+        textLine("target y", targetY, 8);
+        textLine("current y", currentY, 7);
         if (currentY < 0) {
             return;
         }
@@ -274,7 +309,6 @@ void check_y(double targetY, double orientation) {
         move_forward(CHECK_POWER*orientation, difference);
     }
 }
-
 
 void first_performance_checkpoint() {
     // go forward
@@ -453,13 +487,16 @@ void third_performance_checkpoint() {
     Sleep(0.5);
     turn_right(35, 90);
     // move_forward(40, 5+5.0+12.31+4.0);
-    move_forward(40, 6 + 12.31 + 12);
+    move_forward(40, 6 + 12.31 + 9);
     Sleep(0.5);
     turn_left(40, 90);
+    check_heading(HEADING_LEFT);
     move_forward(35, 35);
     // move_backward(25, .15);
     Sleep(0.5);
     turn_left(25, 90);
+    check_heading(HEADING_DOWN);
+
 
 
     // go down ramp
@@ -467,6 +504,7 @@ void third_performance_checkpoint() {
     move_backward(25, 2);
     Sleep(0.5);
     turn_left(25, 90);
+    check_heading(HEADING_RIGHT);
     move_backward(40, 10);
     double distance;
     distance = 1.5;
@@ -481,6 +519,7 @@ void third_performance_checkpoint() {
     move_forward(25, distance);
     Sleep(0.5);
     turn_right(25, 90);
+    check_heading(HEADING_DOWN);
     move_forward(25, 2);
     lowerArm();
     move_backward(25, 7);
