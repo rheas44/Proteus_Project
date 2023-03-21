@@ -284,35 +284,36 @@ void check_heading(double targetHeading) {
         if (difference > 180) {
             difference -= 360;
         }
+        if (std::abs(difference) > 20) {
+            // assume RPS made an error
+            return;
+        }
         sleep(0.5);
         turn_right(CHECK_POWER, difference);
     }
 }
 
-void check_x(double targetX, double orientation) {
-    for (int i = 0; i < CHECK_TIMES; i++) {
-        double currentX = rps_x();
-        textLine("target x", targetX, 8);
-        textLine("current x", currentX, 7);
-        if (currentX < 0) {
-            return;
-        }
-        double difference = targetX - currentX;
-        move_forward(CHECK_POWER*orientation, difference);
-    }
-}
 
-void check_y(double targetY, double orientation) {
-    for (int i = 0; i < CHECK_TIMES; i++) {
-        double currentY = rps_y();
-        textLine("target y", targetY, 8);
-        textLine("current y", currentY, 7);
-        if (currentY < 0) {
-            return;
-        }
-        double difference = targetY - currentY;
-        move_forward(CHECK_POWER*orientation, difference);
-    }
+/* Defines for how long each pulse should be and at what motor power.
+These value will normally be small, but you should play around with the values to find what works best */
+#define PULSE_TIME 0.25
+#define PULSE_POWER 25
+
+/*
+ * Pulse forward a short distance using time
+ */
+void pulse_forward(int percent, float seconds)
+{
+    // Set both motors to desired percent
+    right_motor.SetPercent(percent);
+    left_motor.SetPercent(percent);
+
+    // Wait for the correct number of seconds
+    Sleep(seconds);
+
+    // Turn off motors
+    right_motor.Stop();
+    left_motor.Stop();
 }
 
 void first_performance_checkpoint() {
@@ -474,45 +475,48 @@ void lowerArm() {
 }
 
 void third_performance_checkpoint() {
-    wait_for_light();
+    // wait_for_light();
+
+    // move_backward(35, 15);
+
+
+    // // go up ramp
+    // move_forward(25, 3.5);
+    // Sleep(0.5);
+    // turn_right(35, 90);
+    // check_heading(HEADING_UP);
+    // // move_forward(40, 5+5.0+12.31+4.0);
+    // move_forward(40, 6 + 12.31 + 11);
+    // Sleep(0.5);
+    // turn_left(40, 90);
+    // check_heading(HEADING_LEFT);
+    // move_forward(35, 35);
+    // // move_backward(25, .15);
+    // Sleep(0.5);
+    // turn_left(25, 90);
+    // check_heading(HEADING_DOWN);
+
+
+
+    // // go down ramp
+    // move_forward(25, 20);
+    // move_backward(25, 2);
+    // Sleep(0.5);
+    // turn_left(25, 90);
+    // check_heading(HEADING_RIGHT);
+
+
     arm_servo.SetDegree(0);
+
+    move_forward(25, 12.5);
+
+    turn_right(35, 135);
+
+    move_forward(40, 20);
+    move_backward(40, 30);
     int value = RPS.GetCorrectLever();
-    // go forward
-    move_forward(25, 9.5);
 
-
-    // align with right wall
-    Sleep(0.5);
-    turn_left(35, 45);
-    move_backward(35, 15);
-
-
-    // go up ramp
-    move_forward(25, 3.5);
-    Sleep(0.5);
-    turn_right(35, 90);
-    // move_forward(40, 5+5.0+12.31+4.0);
-    move_forward(40, 6 + 12.31 + 9);
-    Sleep(0.5);
-    turn_left(40, 90);
-    check_heading(HEADING_LEFT);
-    move_forward(35, 35);
-    // move_backward(25, .15);
-    Sleep(0.5);
-    turn_left(25, 90);
-    check_heading(HEADING_DOWN);
-
-
-
-    // go down ramp
-    move_forward(25, 20);
-    move_backward(25, 2);
-    Sleep(0.5);
-    turn_left(25, 90);
-    check_heading(HEADING_RIGHT);
-    move_backward(40, 10);
     double distance;
-    distance = 1.5;
     // if (value == 0) {
     //     distance = 1.5;
     // } else if (value == 1) {
@@ -520,15 +524,16 @@ void third_performance_checkpoint() {
     // } else if (value == 2) {
     //     distance = 7.5;
     // }
-
+    distance = 3.5;
     move_forward(25, distance);
     Sleep(0.5);
     turn_right(25, 90);
-    check_heading(HEADING_DOWN);
-    move_forward(25, 2);
+    // check_heading(HEADING_DOWN);
+    move_forward(25, 1);
     lowerArm();
+    Sleep(0.5);
     move_backward(25, 7);
-    arm_servo.SetDegree(90);
+    arm_servo.SetDegree(100);
     Sleep(5.0);
     move_forward(25, 3.5);
     arm_servo.SetDegree(45);
