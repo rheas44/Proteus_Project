@@ -64,9 +64,9 @@ std::string colorString = "color: ?";
 
 void updateGui() {
     if (TimeNow() > nextShowGuiTime) {
-        textLine("x", cdsCell.Value(), 9);
-        textLine("y", cdsCell.Value(), 10);
-        textLine("h", cdsCell.Value(), 11);
+        textLine("x", RPS.X(), 9);
+        textLine("y", RPS.Y(), 10);
+        textLine("h", RPS.Heading(), 11);
         textLine(colorString, 12);
         textLine("cds", cdsCell.Value(), 13);
         nextShowGuiTime = TimeNow() + 0.25;
@@ -427,47 +427,47 @@ void second_performance_checkpoint() {
 }
 
 void raiseArm() {
-    // arm_motor.SetPercent(-100);
-    Sleep(2.0);
-    // arm_motor.Stop();
+   arm_servo.SetDegree(0);
 }
 
 void lowerArm() {
-    // arm_motor.SetPercent(100);
-    Sleep(2.0);
-    // arm_motor.Stop();
+    arm_servo.SetDegree(60);
 }
 
 void third_performance_checkpoint() {
+    wait_for_light();
+    arm_servo.SetDegree(0);
+    int value = RPS.GetCorrectLever();
     // go forward
     move_forward(25, 9.5);
 
 
     // align with right wall
-    Sleep(0.25);
+    Sleep(0.5);
     turn_left(35, 45);
     move_backward(35, 15);
 
 
     // go up ramp
     move_forward(25, 3.5);
-    Sleep(0.25);
+    Sleep(0.5);
     turn_right(35, 90);
     // move_forward(40, 5+5.0+12.31+4.0);
-    move_forward(40, 6 + 12.31 + 10);
-    Sleep(0.25);
+    move_forward(40, 6 + 12.31 + 12);
+    Sleep(0.5);
     turn_left(40, 90);
     move_forward(35, 35);
     // move_backward(25, .15);
-    Sleep(0.25);
+    Sleep(0.5);
     turn_left(25, 90);
 
 
     // go down ramp
-    move_forward(25, 29);
-    move_backward(25, 5);
+    move_forward(25, 20);
+    move_backward(25, 2);
+    Sleep(0.5);
     turn_left(25, 90);
-    move_backward(25, 10);
+    move_backward(40, 10);
     double distance;
     distance = 1.5;
     // if (value == 0) {
@@ -479,13 +479,16 @@ void third_performance_checkpoint() {
     // }
 
     move_forward(25, distance);
+    Sleep(0.5);
     turn_right(25, 90);
-    move_forward(25, 5);
-    raiseArm();
-    Sleep(5.0);
-    move_backward(25, 5);
-    move_forward(25, 5);
+    move_forward(25, 2);
     lowerArm();
+    move_backward(25, 7);
+    arm_servo.SetDegree(90);
+    Sleep(5.0);
+    move_forward(25, 3.5);
+    arm_servo.SetDegree(45);
+    move_backward(25, 5);
 }
 
 
@@ -660,24 +663,24 @@ int main(void)
     arm_servo.SetMin(750);
     arm_servo.SetMax(1800);
 
-    arm_servo.SetDegree(0);
+    //arm_servo.SetDegree(0);
 
-    textLine("Touch the screen", 0);
-    while(!LCD.Touch(&touchX,&touchY)) {
-        Sleep(.1);
-    }; //Wait for screen to be pressed
+    //textLine("Touch the screen", 0);
+    //while(!LCD.Touch(&touchX,&touchY)) {
+    //    Sleep(.1);
+    //}; Wait for screen to be pressed
 
-    arm_servo.SetDegree(90);
+    //arm_servo.SetDegree(90);
 
 
-    // RPS.InitializeTouchMenu();
+     RPS.InitializeTouchMenu();
 
 
     textLine("Touch the screen", 0);
     while(!LCD.Touch(&touchX,&touchY)) {
         textLine("cds", cdsCell.Value(), 1);
         Sleep(.1);
-    }; //Wait for screen to be pressed
+    };// Wait for screen to be pressed
     while(LCD.Touch(&touchX,&touchY)); //Wait for screen to be unpressed
     LCD.Clear();
 
@@ -690,7 +693,7 @@ int main(void)
     // first_performance_checkpoint();
 
 
-    second_performance_checkpoint();
+   third_performance_checkpoint();
 
     // don't turn off screen until power button pressed
     while (true);
