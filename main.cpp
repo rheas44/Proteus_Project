@@ -15,10 +15,10 @@ const int RPS_GET_TIMES = 10;
 const int CHECK_TIMES = 3;
 const double CHECK_POWER = 25;
 
-const double HEADING_DOWN = 0;
-const double HEADING_RIGHT = 90;
-const double HEADING_UP = 180;
-const double HEADING_LEFT = 270;
+const double HEADING_DOWN = 180;
+const double HEADING_RIGHT = 270;
+const double HEADING_UP = 0;
+const double HEADING_LEFT = 90;
 
 double leftMultiplier = 1;
 
@@ -75,6 +75,11 @@ void updateGui() {
         textLine(colorString, 12);
         textLine("cds", cdsCell.Value(), 13);
         nextShowGuiTime = TimeNow() + 0.25;
+        if (RPS.X() < 0) {
+            LCD.SetBackgroundColor(RED);
+        } else {
+            LCD.SetBackgroundColor(BLACK);
+        }
     }
 }
 
@@ -717,8 +722,7 @@ int main(void)
 
     textLine("Touch the screen", 0);
     while(!LCD.Touch(&touchX,&touchY)) {
-        textLine("cds", cdsCell.Value(), 1);
-        Sleep(.1);
+        updateGui();
     };// Wait for screen to be pressed
     while(LCD.Touch(&touchX,&touchY)); //Wait for screen to be unpressed
     LCD.Clear();
