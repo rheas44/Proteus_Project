@@ -25,7 +25,6 @@ double leftMultiplier = 1;
 
 double nextShowGuiTime = 0;
 
-
 //Declarations for encoders & motors
 DigitalEncoder right_encoder(FEHIO::P0_0);
 DigitalEncoder left_encoder(FEHIO::P0_1);
@@ -68,18 +67,23 @@ std::string colorString = "color: ?";
 
 
 void updateGui() {
+    int rps_lever = RPS.GetCorrectLever();
+    if (rps_lever >= 0) {
+        fuel_lever = rps_lever;
+    }
     if (TimeNow() > nextShowGuiTime) {
-        textLine("x", RPS.X(), 9);
-        textLine("y", RPS.Y(), 10);
-        textLine("h", RPS.Heading(), 11);
-        textLine(colorString, 12);
-        textLine("cds", cdsCell.Value(), 13);
-        nextShowGuiTime = TimeNow() + 0.25;
         if (RPS.X() < 0) {
             LCD.SetBackgroundColor(RED);
         } else {
             LCD.SetBackgroundColor(BLACK);
         }
+        textLine("x", RPS.X(), 9);
+        textLine("y", RPS.Y(), 10);
+        textLine("h", RPS.Heading(), 11);
+        textLine(colorString, 12);
+        // textLine("cds", cdsCell.Value(), 13);
+        textLine("lever", fuel_lever, 13);
+        nextShowGuiTime = TimeNow() + 0.25;
     }
 }
 
@@ -514,17 +518,17 @@ void third_performance_checkpoint() {
 
     move_forward(40, 20);
     move_backward(40, 30);
-    int value = RPS.GetCorrectLever();
+
 
     double distance;
-    // if (value == 0) {
-    //     distance = 3.5;
-    // } else if (value == 1) {
-    //     distance = 5.0;
-    // } else if (value == 2) {
-    //     distance = 6.5;
-    // }
-    distance = 3.5;
+    if (fuel_lever == 0) {
+        distance = 3.5;
+    } else if (fuel_lever == 1) {
+        distance = 5.0;
+    } else if (fuel_lever == 2) {
+        distance = 6.5;
+    }
+    // distance = 3.5;
     move_forward(25, distance);
     Sleep(0.5);
     turn_right(25, 90);
