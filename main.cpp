@@ -552,7 +552,7 @@ void third_performance_checkpoint() {
 
 void fourth_performance_checkpoint() {
     wait_for_light();
-    arm_servo.SetDegree(100);
+    arm_servo.SetDegree(140);
     // go forward
     move_forward(25, 9.5);
 
@@ -567,26 +567,36 @@ void fourth_performance_checkpoint() {
     move_forward(25, 3.5);
     Sleep(0.25);
     turn_right(35, 90);
+    check_heading(HEADING_UP);
     // move_forward(40, 5+5.0+12.31+4.0);
     move_forward(40, 6 + 12.31 + 10);
     Sleep(0.25);
     turn_left(25, 90);
     check_heading(HEADING_LEFT);
-    move_forward(25, 3);
+    move_forward(25, 15);
     turn_right(25, 90);
     check_heading(HEADING_UP);
-    move_forward(25, 5);
+    move_forward(25, 7.5);
     turn_right(25, 90);
     check_heading(HEADING_RIGHT);
+    move_forward(25, 7);
+    LCD.SetBackgroundColor(BLUE);
+    LCD.Clear();
+    Sleep(4.0);
     arm_servo.SetDegree(40);
+    Sleep(2.0);
     turn_left(25, 90);
-    move_backward(25, 4);
+    move_backward(25, 5);
     turn_left(25, 90);
     move_forward(25, 1.5);
     turn_right(25, 90);
-    move_forward(25, 2.5);
+    move_forward(25, 4.5);
     turn_right(25, 90);
-
+    move_forward(25, 4.5);
+    LCD.SetBackgroundColor(RED);
+    LCD.Clear();
+    Sleep(4.0);
+    turn_right(25, 90);
 
 
 }
@@ -792,7 +802,7 @@ int main(void)
     // first_performance_checkpoint();
 
 
-   third_performance_checkpoint();
+   fourth_performance_checkpoint();
 
     // don't turn off screen until power button pressed
     while (true);
