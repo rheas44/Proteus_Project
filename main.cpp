@@ -512,36 +512,42 @@ void third_performance_checkpoint() {
 
     arm_servo.SetDegree(0);
 
-    move_forward(25, 15);
+    move_forward(25, 21.5);
 
     turn_right(35, 135);
 
-    move_forward(40, 20);
-    move_backward(40, 30);
+    // move_forward(40, 20);
+    check_heading(HEADING_RIGHT);
+    move_backward(40, 15);
 
 
     double distance;
-    if (fuel_lever == 0) {
+    if (fuel_lever == 2) {
         distance = 3.5;
     } else if (fuel_lever == 1) {
-        distance = 5.0;
-    } else if (fuel_lever == 2) {
-        distance = 6.5;
+        distance = 7.0;
+    } else if (fuel_lever == 0) {
+        distance = 10.5;
     }
     // distance = 3.5;
     move_forward(25, distance);
     Sleep(0.5);
     turn_right(25, 90);
-    // check_heading(HEADING_DOWN);
-    move_forward(25, 1);
-    lowerArm();
+    check_heading(HEADING_DOWN);
+    // move_forward(25, 1);
+    move_backward(25, 1.5);
+    arm_servo.SetDegree(100);
     Sleep(0.5);
-    move_backward(25, 7);
+    move_backward(25, 3);
     arm_servo.SetDegree(100);
     Sleep(5.0);
-    move_forward(25, 3.5);
+    check_heading(HEADING_DOWN);
+    move_forward(25, 2.5);
     arm_servo.SetDegree(15);
+    Sleep(.5);
+    arm_servo.SetDegree(100);
     move_backward(25, 5);
+    arm_servo.SetDegree(15);
 }
 
 void fourth_performance_checkpoint() {
