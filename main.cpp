@@ -508,7 +508,7 @@ void third_performance_checkpoint() {
 
     arm_servo.SetDegree(0);
 
-    move_forward(25, 12.5);
+    move_forward(25, 15);
 
     turn_right(35, 135);
 
@@ -518,11 +518,11 @@ void third_performance_checkpoint() {
 
     double distance;
     // if (value == 0) {
-    //     distance = 1.5;
+    //     distance = 3.5;
     // } else if (value == 1) {
-    //     distance = 4.5;
+    //     distance = 5.0;
     // } else if (value == 2) {
-    //     distance = 7.5;
+    //     distance = 6.5;
     // }
     distance = 3.5;
     move_forward(25, distance);
@@ -536,7 +536,7 @@ void third_performance_checkpoint() {
     arm_servo.SetDegree(100);
     Sleep(5.0);
     move_forward(25, 3.5);
-    arm_servo.SetDegree(45);
+    arm_servo.SetDegree(15);
     move_backward(25, 5);
 }
 
