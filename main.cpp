@@ -4,6 +4,7 @@
 #include <FEHUtility.h>
 #include <FEHMotor.h>
 #include <FEHRPS.h>
+#include <FEHSD.h>
 #include <cmath>
 #include <vector>
 #include <string>
@@ -49,6 +50,8 @@ constexpr double WHEEL_RADIUS = 2.5 / 2;
 constexpr double PI = 3.14159;
 constexpr int ONE_REVOLUTION_COUNTS = 318;
 
+FEHFile *log_file;
+
 
 void textLine(std::string s, int row) {
     int width = 26;
@@ -72,6 +75,7 @@ void updateGui() {
         fuel_lever = rps_lever;
     }
     if (TimeNow() > nextShowGuiTime) {
+        SD.FPrintf(log_file, "%f,%f,%f,%f\n", TimeNow(), RPS.X(), RPS.Y(), RPS.Heading());
         if (RPS.X() < 0) {
             LCD.SetBackgroundColor(RED);
         } else {
@@ -552,14 +556,14 @@ void third_performance_checkpoint() {
 
 void fourth_performance_checkpoint() {
     wait_for_light();
-    arm_servo.SetDegree(140);
-    // go forward
+    arm_servo.SetDegree(20);
+    // go forward.
     move_forward(25, 9.5);
-
 
     // align with right wall
     Sleep(0.25);
     turn_left(35, 45);
+    check_heading(HEADING_LEFT);
     move_backward(35, 15);
 
 
@@ -569,36 +573,48 @@ void fourth_performance_checkpoint() {
     turn_right(35, 90);
     check_heading(HEADING_UP);
     // move_forward(40, 5+5.0+12.31+4.0);
-    move_forward(40, 6 + 12.31 + 10);
+    move_forward(40, 6 + 12.31 + 10 + 1);
     Sleep(0.25);
+
+    // align with passport flip
     turn_left(25, 90);
     check_heading(HEADING_LEFT);
     move_forward(25, 15);
     turn_right(25, 90);
     check_heading(HEADING_UP);
-    move_forward(25, 7.5);
+    move_forward(25, 14.0);
     turn_right(25, 90);
     check_heading(HEADING_RIGHT);
-    move_forward(25, 7);
+    arm_servo.SetDegree(140);
+    move_forward(25, 3.5);
+
+    // raise arm
     LCD.SetBackgroundColor(BLUE);
     LCD.Clear();
     Sleep(4.0);
     arm_servo.SetDegree(40);
     Sleep(2.0);
+
+    // turn left to flip passport flip
     turn_left(25, 90);
-    move_backward(25, 5);
+
+    // move to other side of passport flip
+    move_backward(25, 10);
     turn_left(25, 90);
-    move_forward(25, 1.5);
+    check_heading(HEADING_LEFT);
+    move_forward(25, 15);
     turn_right(25, 90);
-    move_forward(25, 4.5);
+    check_heading(HEADING_UP);
+    move_forward(25, 15.0);
     turn_right(25, 90);
-    move_forward(25, 4.5);
-    LCD.SetBackgroundColor(RED);
+    check_heading(HEADING_RIGHT);
+    move_forward(25, 20.0);
+
+    // turn right to flip passport flip back down
+    LCD.SetBackgroundColor(GREEN);
     LCD.Clear();
     Sleep(4.0);
     turn_right(25, 90);
-
-
 }
 
 
@@ -764,6 +780,7 @@ void calibrate_motors() {
 
 int main(void)
 {
+    log_file = SD.FOpen("log.csv", "w");
     float touchX, touchY; //for touch screen
 
 
@@ -803,6 +820,8 @@ int main(void)
 
 
    fourth_performance_checkpoint();
+
+   SD.FClose(log_file);
 
     // don't turn off screen until power button pressed
     while (true);
