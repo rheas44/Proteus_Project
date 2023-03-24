@@ -582,11 +582,11 @@ void fourth_performance_checkpoint() {
     move_forward(25, 15);
     turn_right(25, 90);
     check_heading(HEADING_UP);
-    move_forward(25, 14.0);
+    move_forward(25, 13.0);
     turn_right(25, 90);
     check_heading(HEADING_RIGHT);
     arm_servo.SetDegree(140);
-    move_forward(25, 3.5);
+    move_forward(25, 5);
 
     // raise arm
     LCD.SetBackgroundColor(BLUE);
@@ -596,25 +596,25 @@ void fourth_performance_checkpoint() {
     Sleep(2.0);
 
     // turn left to flip passport flip
-    turn_left(25, 90);
+    // turn_left(25, 90);
 
-    // move to other side of passport flip
-    move_backward(25, 10);
-    turn_left(25, 90);
-    check_heading(HEADING_LEFT);
-    move_forward(25, 15);
-    turn_right(25, 90);
-    check_heading(HEADING_UP);
-    move_forward(25, 15.0);
-    turn_right(25, 90);
-    check_heading(HEADING_RIGHT);
-    move_forward(25, 20.0);
+    // // move to other side of passport flip
+    // move_backward(25, 10);
+    // turn_left(25, 90);
+    // check_heading(HEADING_LEFT);
+    // move_forward(25, 15);
+    // turn_right(25, 90);
+    // check_heading(HEADING_UP);
+    // move_forward(25, 15.0);
+    // turn_right(25, 90);
+    // check_heading(HEADING_RIGHT);
+    // move_forward(25, 20.0);
 
-    // turn right to flip passport flip back down
-    LCD.SetBackgroundColor(GREEN);
-    LCD.Clear();
-    Sleep(4.0);
-    turn_right(25, 90);
+    // // turn right to flip passport flip back down
+    // LCD.SetBackgroundColor(GREEN);
+    // LCD.Clear();
+    // Sleep(4.0);
+    // turn_right(25, 90);
 }
 
 
