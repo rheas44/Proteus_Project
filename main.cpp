@@ -292,10 +292,6 @@ void check_heading(double targetHeading) {
         if (difference > 180) {
             difference -= 360;
         }
-        if (std::abs(difference) > 20) {
-            // assume RPS made an error
-            return;
-        }
         sleep(0.5);
         turn_right(CHECK_POWER, difference);
     }
@@ -582,7 +578,7 @@ void fourth_performance_checkpoint() {
     move_forward(25, 15);
     turn_right(25, 90);
     check_heading(HEADING_UP);
-    move_forward(25, 13.0);
+    move_forward(25, 12.0);
     turn_right(25, 90);
     check_heading(HEADING_RIGHT);
     arm_servo.SetDegree(140);
@@ -591,9 +587,9 @@ void fourth_performance_checkpoint() {
     // raise arm
     LCD.SetBackgroundColor(BLUE);
     LCD.Clear();
-    Sleep(4.0);
+    Sleep(1.0);
     arm_servo.SetDegree(40);
-    Sleep(2.0);
+    Sleep(1.0);
 
     // turn left to flip passport flip
     // turn_left(25, 90);
@@ -617,7 +613,47 @@ void fourth_performance_checkpoint() {
     // turn_right(25, 90);
 }
 
+void fifth_performance_checkpoint() {
+    wait_for_light();
+    arm_servo.SetDegree(20);
+    // go forward.
+    move_forward(25, 9.5);
 
+    // align with right wall
+    Sleep(0.25);
+    turn_left(35, 45);
+    check_heading(HEADING_LEFT);
+    move_backward(35, 15);
+
+
+    // go up ramp
+    move_forward(25, 3.5);
+    Sleep(0.25);
+    turn_right(35, 90);
+    check_heading(HEADING_UP);
+    // move_forward(40, 5+5.0+12.31+4.0);
+    move_forward(40, 6 + 12.31 + 10 + 1);
+    Sleep(0.25);
+
+    turn_left(25, 90);
+    check_heading(HEADING_LEFT);
+
+    // get next to luggage
+    move_forward(25, 12);
+
+    turn_right(90, 25);
+    check_heading(HEADING_UP);
+
+    move_forward(25, 8);
+
+    turn_left(25, 180);
+    check_heading(HEADING_DOWN);
+
+    move_forward(25, 15);
+    arm_servo.SetDegree(140);
+
+    move_backward(25, 8);
+}
 
 void choose_airline() {
     // go forward
@@ -819,7 +855,7 @@ int main(void)
     // first_performance_checkpoint();
 
 
-   fourth_performance_checkpoint();
+   fifth_performance_checkpoint();
 
    SD.FClose(log_file);
 
