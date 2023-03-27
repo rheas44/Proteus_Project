@@ -13,7 +13,7 @@
 const int LCD_WIDTH = 320;
 const int LCD_HEIGHT = 240;
 const int RPS_GET_TIMES = 10;
-const int CHECK_TIMES = 3;
+const int CHECK_TIMES = 50;
 const double CHECK_POWER = 25;
 
 const double HEADING_DOWN = 180;
@@ -286,6 +286,9 @@ void check_heading(double targetHeading) {
             return;
         }
         double difference = currentHeading - targetHeading;
+        if (std::abs(difference) < 2) {
+            return;
+        }
         if (difference < -180) {
             difference += 360;
         }
@@ -298,10 +301,13 @@ void check_heading(double targetHeading) {
 }
 
 
+
 /* Defines for how long each pulse should be and at what motor power.
 These value will normally be small, but you should play around with the values to find what works best */
 #define PULSE_TIME 0.25
 #define PULSE_POWER 25
+#define PLUS 1
+#define MINUS -1
 
 /*
  * Pulse forward a short distance using time
@@ -319,6 +325,71 @@ void pulse_forward(int percent, float seconds)
     right_motor.Stop();
     left_motor.Stop();
 }
+
+
+void check_x(float x_coordinate, int orientation)
+{
+    textLine("check_x", 0);
+    // Determine the direction of the motors based on the orientation of the QR code
+    int power = PULSE_POWER;
+    if (orientation == MINUS)
+    {
+        power = -PULSE_POWER;
+    }
+
+
+    // Check if receiving proper RPS coordinates and whether the robot is within an acceptable range
+    while (x_coordinate >= 0 && (rps_x() < x_coordinate - 1 || rps_x() > x_coordinate + 1))
+    {
+        if (rps_x() > x_coordinate)
+        {
+            textLine("moving backward", 2);
+            // Pulse the motors for a short duration in the correct direction
+            pulse_forward(-power, PULSE_TIME);
+        }
+        else if (rps_x() < x_coordinate)
+        {
+            textLine("moving forward", 2);
+            // Pulse the motors for a short duration in the correct direction
+            pulse_forward(power, PULSE_TIME);
+        }
+    }
+}
+
+
+/*
+ * Use RPS to move to the desired y_coordinate based on the orientation of the QR code
+ */
+void check_y(float y_coordinate, int orientation)
+{
+    // Determine the direction of the motors based on the orientation of the QR code
+    int power = PULSE_POWER;
+    if (orientation == MINUS)
+    {
+        power = -PULSE_POWER;
+    }
+
+
+    // Check if receiving proper RPS coordinates and whether the robot is within an acceptable range
+    while (y_coordinate >= 0 && (rps_y() < y_coordinate - 1 || rps_y() > y_coordinate + 1))
+    {
+        if (rps_y() > y_coordinate)
+        {
+            textLine("moving backward", 2);
+            // LCD.WriteLine(rps_y());
+            // Pulse the motors for a short duration in the correct direction
+            pulse_forward(-power, PULSE_TIME);
+        }
+        else if (rps_y() < y_coordinate)
+        {
+            textLine("moving forward", 2);
+            // Pulse the motors for a short duration in the correct direction
+            pulse_forward(power, PULSE_TIME);
+        }
+    }
+
+}
+
 
 void first_performance_checkpoint() {
     // go forward
@@ -615,44 +686,62 @@ void fourth_performance_checkpoint() {
 
 void fifth_performance_checkpoint() {
     wait_for_light();
-    arm_servo.SetDegree(20);
     // go forward.
     move_forward(25, 9.5);
 
     // align with right wall
     Sleep(0.25);
-    turn_left(35, 45);
+    turn_left(40, 45);
     check_heading(HEADING_LEFT);
-    move_backward(35, 15);
+    move_backward(40, 15);
 
 
     // go up ramp
     move_forward(25, 3.5);
     Sleep(0.25);
-    turn_right(35, 90);
+    turn_right(40, 90);
     check_heading(HEADING_UP);
     // move_forward(40, 5+5.0+12.31+4.0);
     move_forward(40, 6 + 12.31 + 10 + 1);
+    check_y(45.3, PLUS);
     Sleep(0.25);
 
-    turn_left(25, 90);
+    turn_left(40, 90);
     check_heading(HEADING_LEFT);
 
     // get next to luggage
-    move_forward(25, 12);
+    move_forward(25, 10);
+    check_x(16, MINUS);
 
-    turn_right(90, 25);
-    check_heading(HEADING_UP);
+    // turn_right(90, 25);
+    // check_heading(HEADING_UP);
 
-    move_forward(25, 8);
+    // move_forward(25, 8);
 
-    turn_left(25, 180);
+    // turn_left(25, 180);
+    // check_heading(HEADING_DOWN);
+
+    turn_left(40, 90);
     check_heading(HEADING_DOWN);
 
-    move_forward(25, 15);
+    move_forward(25, 5);
     arm_servo.SetDegree(140);
 
-    move_backward(25, 8);
+    move_backward(40, 4);
+
+    arm_servo.SetDegree(0);
+
+    turn_left(25, 90);
+
+    check_heading(HEADING_RIGHT);
+    move_forward(40, 10 + 5);
+
+    move_backward(25, 1);
+
+    turn_right(25, 90);
+    check_heading(HEADING_DOWN);
+
+    move_forward(25, 6 + 12.31 + 10 + 1 + 10);
 }
 
 void choose_airline() {
@@ -826,7 +915,7 @@ int main(void)
     arm_servo.SetMin(750);
     arm_servo.SetMax(1800);
 
-    //arm_servo.SetDegree(0);
+    arm_servo.SetDegree(0);
 
     //textLine("Touch the screen", 0);
     //while(!LCD.Touch(&touchX,&touchY)) {
@@ -847,13 +936,7 @@ int main(void)
     LCD.Clear();
 
 
-    // move_forward(25, 8);
-    // calibrate_motors();
-
-
-    // wait_for_red_light();
-    // first_performance_checkpoint();
-
+    wait_for_light();
 
    fifth_performance_checkpoint();
 
