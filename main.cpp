@@ -554,11 +554,11 @@ void fourth_performance_checkpoint() {
     wait_for_light();
     arm_servo.SetDegree(20);
     // go forward.
-    move_forward(25, 9.5);
+    move_forward(40, 9.5);
 
     // align with right wall
     Sleep(0.25);
-    turn_left(35, 45);
+    turn_left(40, 45);
     check_heading(HEADING_LEFT);
     move_backward(35, 15);
 
@@ -566,20 +566,20 @@ void fourth_performance_checkpoint() {
     // go up ramp
     move_forward(25, 3.5);
     Sleep(0.25);
-    turn_right(35, 90);
+    turn_right(40, 90);
     check_heading(HEADING_UP);
     // move_forward(40, 5+5.0+12.31+4.0);
     move_forward(40, 6 + 12.31 + 10 + 1);
     Sleep(0.25);
 
     // align with passport flip
-    turn_left(25, 90);
+    turn_left(40, 90);
     check_heading(HEADING_LEFT);
     move_forward(25, 15);
-    turn_right(25, 90);
+    turn_right(40, 90);
     check_heading(HEADING_UP);
     move_forward(25, 12.0);
-    turn_right(25, 90);
+    turn_right(40, 90);
     check_heading(HEADING_RIGHT);
     arm_servo.SetDegree(140);
     move_forward(25, 5);
