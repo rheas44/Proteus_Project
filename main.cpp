@@ -14,7 +14,7 @@ const int LCD_WIDTH = 320;
 const int LCD_HEIGHT = 240;
 const int RPS_GET_TIMES = 10;
 const int CHECK_TIMES = 50;
-const double CHECK_POWER = 25;
+const double CHECK_POWER = 40;
 
 const double HEADING_DOWN = 180;
 const double HEADING_RIGHT = 270;
@@ -691,7 +691,7 @@ void fifth_performance_checkpoint() {
 
     // align with right wall
     Sleep(0.25);
-    turn_left(40, 45);
+    turn_left(40, 45*1.65);
     check_heading(HEADING_LEFT);
     move_backward(40, 15);
 
@@ -699,19 +699,20 @@ void fifth_performance_checkpoint() {
     // go up ramp
     move_forward(25, 3.5);
     Sleep(0.25);
-    turn_right(40, 90);
+    turn_right(40, 90*1.65);
     check_heading(HEADING_UP);
     // move_forward(40, 5+5.0+12.31+4.0);
     move_forward(40, 6 + 12.31 + 10 + 1);
     check_y(45.3, PLUS);
     Sleep(0.25);
 
-    turn_left(40, 90);
+    turn_left(40, 90*1.65);
     check_heading(HEADING_LEFT);
 
     // get next to luggage
-    move_forward(25, 10);
-    check_x(16, MINUS);
+    double difference = 1.0;
+    move_forward(25, 10-difference);
+    check_x(16+difference, MINUS);
 
     // turn_right(90, 25);
     // check_heading(HEADING_UP);
@@ -721,7 +722,8 @@ void fifth_performance_checkpoint() {
     // turn_left(25, 180);
     // check_heading(HEADING_DOWN);
 
-    turn_left(40, 90);
+    turn_left(40, 90*1.65);
+    check_x(16+difference, MINUS);
     check_heading(HEADING_DOWN);
 
     move_forward(25, 5);
@@ -734,9 +736,7 @@ void fifth_performance_checkpoint() {
     turn_left(25, 90);
 
     check_heading(HEADING_RIGHT);
-    move_forward(40, 10 + 5);
-
-    move_backward(25, 1);
+    move_forward(40, 10 + 5 + 5);
 
     turn_right(25, 90);
     check_heading(HEADING_DOWN);
@@ -905,7 +905,7 @@ void calibrate_motors() {
 
 int main(void)
 {
-    log_file = SD.FOpen("log.csv", "w");
+    // log_file = SD.FOpen("log.csv", "w");
     float touchX, touchY; //for touch screen
 
 
