@@ -14,7 +14,6 @@ const int LCD_WIDTH = 320;
 const int LCD_HEIGHT = 240;
 const int RPS_GET_TIMES = 10;
 const int CHECK_TIMES = 50;
-const double CHECK_POWER = 40;
 
 const double HEADING_DOWN = 180;
 const double HEADING_RIGHT = 270;
@@ -96,8 +95,17 @@ void resetCounts() {
     right_encoder.ResetCounts();
 }
 
+bool bothEncodersWork = false;
+
 int getCounts() {
-    return (left_encoder.Counts() + right_encoder.Counts())/2;
+    if (left_encoder.Counts() > 0 && right_encoder.Counts() > 0) {
+        bothEncodersWork = true;
+    }
+    if (bothEncodersWork) {
+        return (left_encoder.Counts() + right_encoder.Counts())/2;
+    } else {
+        return (left_encoder.Counts() + right_encoder.Counts());
+    }
 }
 
 
@@ -287,14 +295,14 @@ void check_heading(double targetHeading, int percent) {
             return;
         }
         double difference = currentHeading - targetHeading;
-        if (std::abs(difference) < 2) {
-            return;
-        }
         if (difference < -180) {
             difference += 360;
         }
         if (difference > 180) {
             difference -= 360;
+        }
+        if (std::abs(difference) < 2) {
+            return;
         }
         sleep(0.5);
         turn_right(percent, difference);
@@ -757,8 +765,8 @@ void fifth_performance_checkpoint() {
 
     // align with right wall
     Sleep(0.25);
-    turn_left(40, 45);
-    check_heading(HEADING_LEFT, 40);
+    turn_left(25, 45);
+    check_heading(HEADING_LEFT, 15);
     move_backward(40, 15);
 
 
@@ -767,16 +775,16 @@ void fifth_performance_checkpoint() {
     // go up ramp
     move_forward(25, 2.5);
     Sleep(0.25);
-    turn_right(40, 90);
-    check_heading(HEADING_UP, 40);
+    turn_right(25, 90);
+    check_heading(HEADING_UP, 15);
     // move_forward(40, 5+5.0+12.31+4.0);
     move_forward(40, 6 + 12.31);
     check_y(45.3, PLUS);
     Sleep(0.25);
 
 
-    turn_left(40, 90);
-    check_heading(HEADING_LEFT, 40);
+    turn_left(25, 90);
+    check_heading(HEADING_LEFT, 15);
 
 
     // get next to luggage
@@ -785,20 +793,12 @@ void fifth_performance_checkpoint() {
     check_x(16+difference, MINUS);
 
 
-    // turn_right(90, 25);
-    // check_heading(HEADING_UP);
 
 
-    // move_forward(25, 8);
 
-
-    // turn_left(25, 180);
-    // check_heading(HEADING_DOWN);
-
-
-    turn_left(40, 90);
+    turn_left(25, 90);
     check_x(16+difference, MINUS);
-    check_heading(HEADING_DOWN, 40);
+    check_heading(HEADING_DOWN, 15);
 
 
     move_forward(25, 10);
@@ -811,15 +811,15 @@ void fifth_performance_checkpoint() {
     arm_servo.SetDegree(0);
 
 
-    turn_left(15, 90);
+    turn_left(25, 90);
 
 
-    check_heading(HEADING_RIGHT, 25);
+    check_heading(HEADING_RIGHT, 15);
     move_forward(40, 10 + 5 + 5);
 
 
-    turn_right(15, 90);
-    check_heading(HEADING_DOWN, 25);
+    turn_right(25, 90);
+    check_heading(HEADING_DOWN, 15);
 
 
     move_forward(25, 6 + 12.31 + 10 + 1 + 10);
@@ -1049,7 +1049,7 @@ int main(void)
     //arm_servo.SetDegree(90);
 
 
-
+    // calibrate_motors();
 
     RPS.InitializeTouchMenu();
 
@@ -1057,6 +1057,7 @@ int main(void)
 
 
     textLine("Touch the screen", 0);
+    while(LCD.Touch(&touchX,&touchY)); //Wait for screen to be unpressed
     while(!LCD.Touch(&touchX,&touchY)) {
         updateGui();
     };// Wait for screen to be pressed
@@ -1072,7 +1073,7 @@ int main(void)
    fifth_performance_checkpoint();
 
 
-   SD.FClose(log_file);
+//    SD.FClose(log_file);
 
 
     // don't turn off screen until power button pressed
