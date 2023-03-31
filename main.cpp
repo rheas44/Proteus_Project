@@ -277,7 +277,8 @@ double rps_y() {
     return -1;
 }
 
-void check_heading(double targetHeading) {
+
+void check_heading(double targetHeading, int percent) {
     for (int i = 0; i < CHECK_TIMES; i++) {
         double currentHeading = rps_heading();
         textLine("target h", targetHeading, 8);
@@ -296,7 +297,7 @@ void check_heading(double targetHeading) {
             difference -= 360;
         }
         sleep(0.5);
-        turn_right(CHECK_POWER, difference);
+        turn_right(percent, difference);
     }
 }
 
@@ -370,6 +371,8 @@ void check_y(float y_coordinate, int orientation)
     }
 
 
+
+
     // Check if receiving proper RPS coordinates and whether the robot is within an acceptable range
     while (y_coordinate >= 0 && (rps_y() < y_coordinate - 1 || rps_y() > y_coordinate + 1))
     {
@@ -388,7 +391,10 @@ void check_y(float y_coordinate, int orientation)
         }
     }
 
+
 }
+
+
 
 
 void first_performance_checkpoint() {
@@ -396,9 +402,13 @@ void first_performance_checkpoint() {
     move_forward(25, 9.5);
 
 
+
+
     // align with right wall
     turn_left(25, 45);
     move_backward(25, 25);
+
+
 
 
     // go up ramp
@@ -406,6 +416,8 @@ void first_performance_checkpoint() {
     turn_right(35, 90);
     // move_forward(40, 5+5.0+12.31+4.0);
     move_forward(40, 6 + 12.31 + 10);
+
+
 
 
     // align with kiosk
@@ -415,12 +427,18 @@ void first_performance_checkpoint() {
     turn_right(35, 90);
 
 
+
+
     // go to kisok
     move_forward(25, 12 + 12 + 3);
 
 
+
+
     // move back
     move_backward(25, 4);
+
+
 
 
     // align with left wall
@@ -428,13 +446,19 @@ void first_performance_checkpoint() {
     move_forward(40, 18);
 
 
+
+
     // move_backward(25, .15);
     turn_left(35, 90);
+
+
 
 
     // go down ramp
     move_forward(25, 35);
 }
+
+
 
 
 void second_performance_checkpoint() {
@@ -443,10 +467,14 @@ void second_performance_checkpoint() {
     move_forward(25, 9.5);
 
 
+
+
     // align with right wall
     Sleep(0.25);
     turn_left(35, 45);
     move_backward(35, 15);
+
+
 
 
     // go up ramp
@@ -456,6 +484,8 @@ void second_performance_checkpoint() {
     // move_forward(40, 5+5.0+12.31+4.0);
     move_forward(40, 6 + 12.31 + 10);
     Sleep(0.25);
+
+
 
 
     // drive near light
@@ -489,12 +519,13 @@ void second_performance_checkpoint() {
     right_motor.SetPercent(0);
     // go to light
     // while (cdsCell.Value() >= 1.0) {
-    //     left_motor.SetPercent(25);
-    //     right_motor.SetPercent(25);
+    //  left_motor.SetPercent(25);
+    //  right_motor.SetPercent(25);
     // }
-    //     left_motor.SetPercent(0);
-    //     right_motor.SetPercent(0);
-    //     // red light case (need to check cds cell values)
+    //  left_motor.SetPercent(0);
+    //  right_motor.SetPercent(0);
+    //  // red light case (need to check cds cell values)
+
 
         if (red) {
             // red light case
@@ -521,8 +552,12 @@ void second_performance_checkpoint() {
         }
 
 
+
+
     // move back
     move_backward(25, 4);
+
+
 
 
     // align with left wall
@@ -532,27 +567,37 @@ void second_performance_checkpoint() {
     move_forward(60, 5);
 
 
+
+
     // move_backward(25, .15);
     Sleep(0.25);
     turn_left(25, 90);
+
+
 
 
     // go down ramp
     move_forward(25, 29);
 }
 
+
 void raiseArm() {
    arm_servo.SetDegree(0);
 }
+
 
 void lowerArm() {
     arm_servo.SetDegree(60);
 }
 
+
 void third_performance_checkpoint() {
     // wait_for_light();
 
+
     // move_backward(35, 15);
+
+
 
 
     // // go up ramp
@@ -573,6 +618,9 @@ void third_performance_checkpoint() {
 
 
 
+
+
+
     // // go down ramp
     // move_forward(25, 20);
     // move_backward(25, 2);
@@ -581,15 +629,22 @@ void third_performance_checkpoint() {
     // check_heading(HEADING_RIGHT);
 
 
+
+
     arm_servo.SetDegree(0);
+
 
     move_forward(25, 21.5);
 
+
     turn_right(35, 135);
 
+
     // move_forward(40, 20);
-    check_heading(HEADING_RIGHT);
+    check_heading(HEADING_RIGHT, 25);
     move_backward(40, 15);
+
+
 
 
     double distance;
@@ -604,7 +659,7 @@ void third_performance_checkpoint() {
     move_forward(25, distance);
     Sleep(0.5);
     turn_right(25, 90);
-    check_heading(HEADING_DOWN);
+    check_heading(HEADING_DOWN, 25);
     // move_forward(25, 1);
     move_backward(25, 1.5);
     arm_servo.SetDegree(100);
@@ -612,7 +667,7 @@ void third_performance_checkpoint() {
     move_backward(25, 3);
     arm_servo.SetDegree(100);
     Sleep(5.0);
-    check_heading(HEADING_DOWN);
+    check_heading(HEADING_DOWN, 25);
     move_forward(25, 2.5);
     arm_servo.SetDegree(15);
     Sleep(.5);
@@ -621,39 +676,45 @@ void third_performance_checkpoint() {
     arm_servo.SetDegree(15);
 }
 
+
 void fourth_performance_checkpoint() {
     wait_for_light();
     arm_servo.SetDegree(20);
     // go forward.
     move_forward(40, 9.5);
 
+
     // align with right wall
     Sleep(0.25);
     turn_left(40, 45);
-    check_heading(HEADING_LEFT);
+    check_heading(HEADING_LEFT, 25);
     move_backward(35, 15);
+
+
 
 
     // go up ramp
     move_forward(25, 3.5);
     Sleep(0.25);
     turn_right(40, 90);
-    check_heading(HEADING_UP);
+    check_heading(HEADING_UP, 25);
     // move_forward(40, 5+5.0+12.31+4.0);
     move_forward(40, 6 + 12.31 + 10 + 1);
     Sleep(0.25);
 
+
     // align with passport flip
     turn_left(40, 90);
-    check_heading(HEADING_LEFT);
+    check_heading(HEADING_LEFT, 25);
     move_forward(25, 15);
     turn_right(40, 90);
-    check_heading(HEADING_UP);
+    check_heading(HEADING_UP, 25);
     move_forward(25, 12.0);
     turn_right(40, 90);
-    check_heading(HEADING_RIGHT);
+    check_heading(HEADING_RIGHT, 25);
     arm_servo.SetDegree(140);
     move_forward(25, 5);
+
 
     // raise arm
     LCD.SetBackgroundColor(BLUE);
@@ -662,8 +723,10 @@ void fourth_performance_checkpoint() {
     arm_servo.SetDegree(40);
     Sleep(1.0);
 
+
     // turn left to flip passport flip
     // turn_left(25, 90);
+
 
     // // move to other side of passport flip
     // move_backward(25, 10);
@@ -677,6 +740,7 @@ void fourth_performance_checkpoint() {
     // check_heading(HEADING_RIGHT);
     // move_forward(25, 20.0);
 
+
     // // turn right to flip passport flip back down
     // LCD.SetBackgroundColor(GREEN);
     // LCD.Clear();
@@ -684,74 +748,96 @@ void fourth_performance_checkpoint() {
     // turn_right(25, 90);
 }
 
+
 void fifth_performance_checkpoint() {
     wait_for_light();
     // go forward.
-    move_forward(25, 9.5);
+    move_forward(25, 7);
+
 
     // align with right wall
     Sleep(0.25);
-    turn_left(40, 45*1.65);
-    check_heading(HEADING_LEFT);
+    turn_left(40, 45);
+    check_heading(HEADING_LEFT, 40);
     move_backward(40, 15);
 
 
+
+
     // go up ramp
-    move_forward(25, 3.5);
+    move_forward(25, 2.5);
     Sleep(0.25);
-    turn_right(40, 90*1.65);
-    check_heading(HEADING_UP);
+    turn_right(40, 90);
+    check_heading(HEADING_UP, 40);
     // move_forward(40, 5+5.0+12.31+4.0);
-    move_forward(40, 6 + 12.31 + 10 + 1);
+    move_forward(40, 6 + 12.31);
     check_y(45.3, PLUS);
     Sleep(0.25);
 
-    turn_left(40, 90*1.65);
-    check_heading(HEADING_LEFT);
+
+    turn_left(40, 90);
+    check_heading(HEADING_LEFT, 40);
+
 
     // get next to luggage
-    double difference = 1.0;
-    move_forward(25, 10-difference);
+    double difference = -1.0;
+    move_forward(25, 5);
     check_x(16+difference, MINUS);
+
 
     // turn_right(90, 25);
     // check_heading(HEADING_UP);
 
+
     // move_forward(25, 8);
+
 
     // turn_left(25, 180);
     // check_heading(HEADING_DOWN);
 
-    turn_left(40, 90*1.65);
-    check_x(16+difference, MINUS);
-    check_heading(HEADING_DOWN);
 
-    move_forward(25, 5);
+    turn_left(40, 90);
+    check_x(16+difference, MINUS);
+    check_heading(HEADING_DOWN, 40);
+
+
+    move_forward(25, 10);
     arm_servo.SetDegree(140);
+
 
     move_backward(40, 4);
 
+
     arm_servo.SetDegree(0);
 
-    turn_left(25, 90);
 
-    check_heading(HEADING_RIGHT);
+    turn_left(15, 90);
+
+
+    check_heading(HEADING_RIGHT, 25);
     move_forward(40, 10 + 5 + 5);
 
-    turn_right(25, 90);
-    check_heading(HEADING_DOWN);
+
+    turn_right(15, 90);
+    check_heading(HEADING_DOWN, 25);
+
 
     move_forward(25, 6 + 12.31 + 10 + 1 + 10);
 }
+
 
 void choose_airline() {
     // go forward
     move_forward(25, 9.5);
 
 
+
+
     // align with right wall
     turn_left(25, 45);
     move_backward(25, 10);
+
+
 
 
     // go up ramp
@@ -761,6 +847,8 @@ void choose_airline() {
     move_forward(40, 6 + 12.31 + 18);
 
 
+
+
     // drive near light
     turn_left(35, 90);
     // move_forward(25, 8.8);
@@ -768,12 +856,18 @@ void choose_airline() {
     turn_right(35, 90);
 
 
+
+
     // go to light
     move_forward(25, 12 + 12);
 
 
+
+
     // move back
     move_backward(25, 4);
+
+
 
 
     // red light case (need to check cds cell values)
@@ -786,6 +880,8 @@ void choose_airline() {
     }
 
 
+
+
     // blue light case (need to check cds cell values)
     if (cdsCell.Value() > 0.65 && cdsCell.Value() < 0.9) {
         turn_left(35, 90);
@@ -796,10 +892,14 @@ void choose_airline() {
     }
 
 
+
+
     // arm_motor.SetPercent(50);
     // move_forward(25, 4);
     // move_backward(25, 4);
     // arm_motor.SetPercent(-50);
+
+
 
 
     // align with left wall
@@ -807,13 +907,19 @@ void choose_airline() {
     move_forward(40, 18);
 
 
+
+
     // move_backward(25, .15);
     turn_left(35, 90);
+
+
 
 
     // go down ramp
     move_forward(25, 29);
 }
+
+
 
 
 void fuel_airplane() {
@@ -846,6 +952,8 @@ void fuel_airplane() {
 }
 
 
+
+
 void luggage() {
     move_backward(25, 2);
     turn_right(35, 90);
@@ -854,6 +962,8 @@ void luggage() {
     // arm_motor.SetPercent(-50);
     move_backward(25, 4);
 }
+
+
 
 
 void passport_stamp() {
@@ -865,6 +975,8 @@ void passport_stamp() {
     move_forward(25, 1);
     // arm_motor.SetPercent(-50);
 }
+
+
 
 
 void final_button() {
@@ -880,6 +992,8 @@ void final_button() {
 }
 
 
+
+
 void course_traversal() {
     // Begin by choosing the correct airline.
     choose_airline();
@@ -888,6 +1002,8 @@ void course_traversal() {
     passport_stamp();
     final_button();
 }
+
+
 
 
 void calibrate_motors() {
@@ -903,29 +1019,41 @@ void calibrate_motors() {
 }
 
 
+
+
 int main(void)
 {
     // log_file = SD.FOpen("log.csv", "w");
     float touchX, touchY; //for touch screen
 
 
+
+
     LCD.Clear(BLACK);
     LCD.SetFontColor(WHITE);
+
 
     arm_servo.SetMin(750);
     arm_servo.SetMax(1800);
 
+
     arm_servo.SetDegree(0);
+
 
     //textLine("Touch the screen", 0);
     //while(!LCD.Touch(&touchX,&touchY)) {
-    //    Sleep(.1);
+    //  Sleep(.1);
     //}; Wait for screen to be pressed
+
 
     //arm_servo.SetDegree(90);
 
 
-     RPS.InitializeTouchMenu();
+
+
+    RPS.InitializeTouchMenu();
+
+
 
 
     textLine("Touch the screen", 0);
@@ -936,13 +1064,17 @@ int main(void)
     LCD.Clear();
 
 
+
+
     wait_for_light();
+
 
    fifth_performance_checkpoint();
 
+
    SD.FClose(log_file);
+
 
     // don't turn off screen until power button pressed
     while (true);
 }
-
