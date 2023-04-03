@@ -778,8 +778,8 @@ void fifth_performance_checkpoint() {
     turn_right(25, 90);
     check_heading(HEADING_UP, 15);
     // move_forward(40, 5+5.0+12.31+4.0);
-    move_forward(40, 6 + 12.31);
-    check_y(45.3, PLUS);
+    move_forward(40, 6 + 12.31 + 3);
+    check_y(45.3 + 3, PLUS);
     Sleep(0.25);
 
 
