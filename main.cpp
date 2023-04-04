@@ -347,16 +347,17 @@ void check_x(float x_coordinate, int orientation)
     }
 
 
+
     // Check if receiving proper RPS coordinates and whether the robot is within an acceptable range
-    while (x_coordinate >= 0 && (rps_x() < x_coordinate - 1 || rps_x() > x_coordinate + 1))
+    while (auto current_x = rps_x(); x_coordinate >= 0 && (current_x < x_coordinate - 1 || current_x > x_coordinate + 1))
     {
-        if (rps_x() > x_coordinate)
+        if (current_x > x_coordinate)
         {
             textLine("moving backward", 2);
             // Pulse the motors for a short duration in the correct direction
             pulse_forward(-power, PULSE_TIME);
         }
-        else if (rps_x() < x_coordinate)
+        else if (current_x < x_coordinate)
         {
             textLine("moving forward", 2);
             // Pulse the motors for a short duration in the correct direction
@@ -382,24 +383,22 @@ void check_y(float y_coordinate, int orientation)
 
 
     // Check if receiving proper RPS coordinates and whether the robot is within an acceptable range
-    while (y_coordinate >= 0 && (rps_y() < y_coordinate - 1 || rps_y() > y_coordinate + 1))
+    while (auto current_y = rps_y(); y_coordinate >= 0 && (current_y < y_coordinate - 1 || current_y > y_coordinate + 1))
     {
-        if (rps_y() > y_coordinate)
+        if (current_y > y_coordinate)
         {
             textLine("moving backward", 2);
             // LCD.WriteLine(rps_y());
             // Pulse the motors for a short duration in the correct direction
             pulse_forward(-power, PULSE_TIME);
         }
-        else if (rps_y() < y_coordinate)
+        else if (current_y < y_coordinate)
         {
             textLine("moving forward", 2);
             // Pulse the motors for a short duration in the correct direction
             pulse_forward(power, PULSE_TIME);
         }
     }
-
-
 }
 
 
@@ -764,7 +763,7 @@ void fifth_performance_checkpoint() {
 
 
     // align with right wall
-    Sleep(0.25);
+    Sleep(0.1);
     turn_left(30, 45);
     check_heading(HEADING_LEFT, 30);
     move_backward(40, 15);
@@ -774,13 +773,13 @@ void fifth_performance_checkpoint() {
 
     // go up ramp
     move_forward(30, 2.5);
-    Sleep(0.25);
+    Sleep(0.1);
     turn_right(30, 90);
     check_heading(HEADING_UP, 30);
     // move_forward(40, 5+5.0+12.31+4.0);
-    move_forward(40, 6 + 12.31 + 3 + 2 + 2 + 2);
+    move_forward(40, 6 + 12.31 + 3 + 2 + 2 + 2 + 4);
     check_y(45.3 + 3 - 2 + 2 - 1 - .75, PLUS);
-    Sleep(0.25);
+    Sleep(0.1);
 
 
     turn_left(30, 90);
@@ -789,7 +788,7 @@ void fifth_performance_checkpoint() {
 
     // get next to luggage
     double difference = -1.0;
-    move_forward(25, 5);
+    move_forward(25, 5 + 9);
     check_x(16+difference, MINUS);
 
 
@@ -1028,7 +1027,7 @@ void calibrate_motors() {
 
 int main(void)
 {
-    log_file = SD.FOpen("log.csv", "w");
+    // log_file = SD.FOpen("log.csv", "w");
     float touchX, touchY; //for touch screen
 
 
@@ -1078,7 +1077,7 @@ int main(void)
    fifth_performance_checkpoint();
 
 
-   SD.FClose(log_file);
+//    SD.FClose(log_file);
 
 
     // don't turn off screen until power button pressed
