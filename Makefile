@@ -21,6 +21,7 @@ ifeq ($(UNAME_S),Darwin)
 else
 	sudo mkdir -p /media/FEHSD
 	sudo mount $(FEHSD_DEVICE) /media/FEHSD
+	cp /media/FEHSD/LOG.CSV log.csv
 	sudo cp *.s19 /media/FEHSD/CODE.S19
 	sudo umount $(FEHSD_DEVICE)
 endif

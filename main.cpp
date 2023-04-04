@@ -51,6 +51,7 @@ constexpr int ONE_REVOLUTION_COUNTS = 318;
 
 FEHFile *log_file;
 
+bool red = false;
 
 void textLine(std::string s, int row) {
     int width = 26;
@@ -69,12 +70,15 @@ std::string colorString = "color: ?";
 
 
 void updateGui() {
+    if (cdsCell.Value() < 1.05) {
+        red = true;
+    }
     int rps_lever = RPS.GetCorrectLever();
     if (rps_lever >= 0) {
         fuel_lever = rps_lever;
     }
     if (TimeNow() > nextShowGuiTime) {
-        SD.FPrintf(log_file, "%f,%f,%f,%f\n", TimeNow(), RPS.X(), RPS.Y(), RPS.Heading());
+        SD.FPrintf(log_file, "%f,%f,%f,%f,%f\n", TimeNow(), RPS.X(), RPS.Y(), RPS.Heading(), cdsCell);
         if (RPS.X() < 0) {
             LCD.SetBackgroundColor(RED);
         } else {
@@ -402,193 +406,6 @@ void check_y(float y_coordinate, int orientation)
     }
 }
 
-
-
-
-void first_performance_checkpoint() {
-    // go forward
-    move_forward(25, 9.5);
-
-
-
-
-    // align with right wall
-    turn_left(25, 45);
-    move_backward(25, 25);
-
-
-
-
-    // go up ramp
-    move_forward(25, 3.5);
-    turn_right(35, 90);
-    // move_forward(40, 5+5.0+12.31+4.0);
-    move_forward(40, 6 + 12.31 + 10);
-
-
-
-
-    // align with kiosk
-    turn_left(35, 90);
-    // move_forward(25, 8.8);
-    move_forward(25, 10);
-    turn_right(35, 90);
-
-
-
-
-    // go to kisok
-    move_forward(25, 12 + 12 + 3);
-
-
-
-
-    // move back
-    move_backward(25, 4);
-
-
-
-
-    // align with left wall
-    turn_left(35, 90);
-    move_forward(40, 18);
-
-
-
-
-    // move_backward(25, .15);
-    turn_left(35, 90);
-
-
-
-
-    // go down ramp
-    move_forward(25, 35);
-}
-
-
-
-
-void second_performance_checkpoint() {
-    wait_for_light();
-    // go forward
-    move_forward(25, 9.5);
-
-
-
-
-    // align with right wall
-    sleep(0.25);
-    turn_left(35, 45);
-    move_backward(35, 15);
-
-
-
-
-    // go up ramp
-    move_forward(25, 3.5);
-    sleep(0.25);
-    turn_right(35, 90);
-    // move_forward(40, 5+5.0+12.31+4.0);
-    move_forward(40, 6 + 12.31 + 10);
-    sleep(0.25);
-
-
-
-
-    // drive near light
-    sleep(0.25);
-    turn_left(35, 90);
-    move_backward(50, 10);
-    // move_forward(25, 8.8);
-    move_forward(25, 22.75);
-    sleep(0.25);
-    turn_right(35, 90);
-    left_motor.SetPercent(25);
-    right_motor.SetPercent(25);
-    bool red = false;
-    resetCounts();
-    int inches = 18;
-    int expectedCounts = (ONE_REVOLUTION_COUNTS * inches) / (2 * PI * WHEEL_RADIUS);
-    while (getCounts() < expectedCounts) {
-        while (cdsCell.Value() < 1.05) {
-            left_motor.SetPercent(15);
-            right_motor.SetPercent(15);
-        }
-        left_motor.SetPercent(25);
-        right_motor.SetPercent(25);
-        updateGui();
-        textLine("cds", cdsCell.Value(), 1);
-        if (cdsCell.Value() < 1.05) {
-            red = true;
-        }
-    }
-    left_motor.SetPercent(0);
-    right_motor.SetPercent(0);
-    // go to light
-    // while (cdsCell.Value() >= 1.0) {
-    //  left_motor.SetPercent(25);
-    //  right_motor.SetPercent(25);
-    // }
-    //  left_motor.SetPercent(0);
-    //  right_motor.SetPercent(0);
-    //  // red light case (need to check cds cell values)
-
-
-        if (red) {
-            // red light case
-            colorString = "color: RED";
-            move_backward(25, 15);
-            sleep(0.25);
-            turn_right(35, 90);
-            move_forward(25, 10.5);
-            sleep(0.25);
-            turn_left(35, 90);
-            move_forward(25, 20);
-            move_backward(25, 4);
-        } else {
-            // blue light case
-            colorString = "color: BLUE";
-            move_backward(25, 5);
-            sleep(0.25);
-            turn_right(35, 90);
-            move_forward(25, 4);
-            sleep(0.25);
-            turn_left(35, 90);
-            move_forward(25, 14);
-            move_backward(25, 4);
-        }
-
-
-
-
-    // move back
-    move_backward(25, 4);
-
-
-
-
-    // align with left wall
-    sleep(0.25);
-    turn_left(35, 90);
-    move_forward(40, 18);
-    move_forward(60, 5);
-
-
-
-
-    // move_backward(25, .15);
-    sleep(0.25);
-    turn_left(25, 90);
-
-
-
-
-    // go down ramp
-    move_forward(25, 29);
-}
-
-
 void raiseArm() {
    arm_servo.SetDegree(0);
 }
@@ -806,23 +623,133 @@ void passport_flip() {
     move_backward(40, 4);
     arm_servo.SetDegree(0);
 
-    move_backward(40, 5 + 4.4);
-    check_y(59.09, MINUS);
+    move_backward(40, 5 + 4.4 - 2.0);
+    check_y(59.09 - 2.0, MINUS);
 
     turn_left(25, 90);
     check_heading(HEADING_RIGHT, 25);
 
-    arm_servo.SetDegree(140);
-    move_forward(25, 7.5);
+    arm_servo.SetDegree(160);
+    sleep(0.25);
 
-    sleep(1.0);
-    arm_servo.SetDegree(40);
-    sleep(1.0);
+    move_forward(40, 7.5);
+
+    sleep(0.5);
+    arm_servo.SetDegree(0);
+    move_forward(25, 1);
+    sleep(1.5);
+    move_backward(40, 3);
+    arm_servo.SetDegree(0);
+}
+
+// start after passport flip
+// end down the ramp
+void kiosk_buttons() {
+    move_backward(40, 1 + 1);
+
+    check_x(11.4 + 1.5 - 1, PLUS);
+
+    turn_left(25, 90);
+    check_heading(HEADING_UP, 25);
+
+    red = false;
+
+    check_y(60.8, PLUS);
+
+    if (red) {
+        // red light case
+        colorString = "color: RED";
+        move_backward(40, 15);
+        turn_right(35, 90);
+        check_heading(HEADING_RIGHT, 25);
+        move_forward(40, 10.5 - 2 - 1);
+        check_x(65, PLUS);
+        turn_left(35, 90);
+        check_heading(HEADING_UP, 25);
+        move_forward(40, 20);
+        move_backward(40, 4);
+    } else {
+        // blue light case
+        colorString = "color: BLUE";
+        move_backward(40, 5);
+        turn_right(35, 90);
+        check_heading(HEADING_RIGHT, 25);
+        move_forward(25, 4);
+        turn_left(35, 90);
+        check_heading(HEADING_UP, 25);
+
+        move_forward(40, 14);
+        move_backward(40, 4);
+    }
+
+    // move back
+    move_backward(25, 4);
+
+
+    // align with left wall
+    sleep(0.25);
+    turn_left(35, 90);
+    check_heading(HEADING_LEFT, 25);
+    move_forward(40, 18);
+
+    sleep(0.25);
+    turn_left(25, 70);
+    move_forward(25, 2);
+    turn_left(25, 20);
+    check_heading(HEADING_DOWN, 25);
+
+
+    // go down ramp
+    move_forward(25, 12+3+3+5);
+    turn_left(25, 90);
+    check_heading(HEADING_RIGHT, 25);
+    move_backward(40, 3);
+}
+
+void fuel_levers() {
+    double distance;
+    if (fuel_lever == 2) {
+        distance = 3.5;
+    } else if (fuel_lever == 1) {
+        distance = 7.0;
+    } else if (fuel_lever == 0) {
+        distance = 10.5;
+    }
+    // distance = 3.5;
+    move_forward(25, distance);
+    sleep(0.5);
+    turn_right(25, 90);
+    check_heading(HEADING_DOWN, 25);
+    // move_forward(25, 1);
+    move_backward(25, 1.5);
+    arm_servo.SetDegree(100);
+    sleep(0.5);
+    move_backward(25, 3);
+    arm_servo.SetDegree(100);
+    sleep(5.0);
+    check_heading(HEADING_DOWN, 25);
+    move_forward(25, 2.5);
+    arm_servo.SetDegree(15);
+    sleep(.5);
+    arm_servo.SetDegree(100);
+    move_backward(25, 5);
+    arm_servo.SetDegree(15);
+
+    turn_left(25, 90);
+    check_heading(HEADING_RIGHT, 25);
+
+    move_forward(40, 20 - distance);
+    turn_right(25, 45);
+    check_heading((HEADING_DOWN+HEADING_RIGHT)/2, 25);
+
+    move_forward(40, 5);
 }
 
 void course() {
     luggage();
     passport_flip();
+    kiosk_buttons();
+    fuel_levers();
 }
 
 void fifth_performance_checkpoint() {
