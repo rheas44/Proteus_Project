@@ -84,8 +84,8 @@ void updateGui() {
         textLine("y", RPS.Y(), 10);
         textLine("h", RPS.Heading(), 11);
         textLine(colorString, 12);
-        // textLine("cds", cdsCell.Value(), 13);
-        textLine("lever", fuel_lever, 13);
+        textLine("cds", cdsCell.Value(), 13);
+        // textLine("lever", fuel_lever, 13);
         nextShowGuiTime = TimeNow() + 0.25;
     }
 }
@@ -313,7 +313,7 @@ void check_heading(double targetHeading, int percent) {
 
 /* Defines for how long each pulse should be and at what motor power.
 These value will normally be small, but you should play around with the values to find what works best */
-#define PULSE_TIME 0.25
+#define PULSE_TIME 0.15
 #define PULSE_POWER 25
 #define PLUS 1
 #define MINUS -1
@@ -760,31 +760,31 @@ void fourth_performance_checkpoint() {
 void fifth_performance_checkpoint() {
     wait_for_light();
     // go forward.
-    move_forward(25, 7);
+    move_forward(25, 8.25);
 
 
     // align with right wall
     Sleep(0.25);
-    turn_left(25, 45);
-    check_heading(HEADING_LEFT, 15);
+    turn_left(30, 45);
+    check_heading(HEADING_LEFT, 30);
     move_backward(40, 15);
 
 
 
 
     // go up ramp
-    move_forward(25, 2.5);
+    move_forward(30, 2.5);
     Sleep(0.25);
-    turn_right(25, 90);
-    check_heading(HEADING_UP, 15);
+    turn_right(30, 90);
+    check_heading(HEADING_UP, 30);
     // move_forward(40, 5+5.0+12.31+4.0);
-    move_forward(40, 6 + 12.31 + 3);
-    check_y(45.3 + 3, PLUS);
+    move_forward(40, 6 + 12.31 + 3 + 2 + 2 + 2);
+    check_y(45.3 + 3 - 2 + 2 - 1 - .75, PLUS);
     Sleep(0.25);
 
 
-    turn_left(25, 90);
-    check_heading(HEADING_LEFT, 15);
+    turn_left(30, 90);
+    check_heading(HEADING_LEFT, 30);
 
 
     // get next to luggage
@@ -796,13 +796,16 @@ void fifth_performance_checkpoint() {
 
 
 
-    turn_left(25, 90);
+    turn_left(30, 90);
     check_x(16+difference, MINUS);
-    check_heading(HEADING_DOWN, 15);
+    check_heading(HEADING_DOWN, 30);
 
 
-    move_forward(25, 10);
-    arm_servo.SetDegree(140);
+    move_forward(30, 10);
+    for (int i = 0; i < 140; i += 140/3) {
+        arm_servo.SetDegree(i);
+        sleep(.25);
+    }
 
 
     move_backward(40, 4);
@@ -822,7 +825,9 @@ void fifth_performance_checkpoint() {
     check_heading(HEADING_DOWN, 15);
 
 
-    move_forward(25, 6 + 12.31 + 10 + 1 + 10);
+    move_forward(25, 39.31 / 2);
+    check_heading(HEADING_DOWN, 15);
+    move_forward(25, 39.31 / 2);
 }
 
 
@@ -1023,7 +1028,7 @@ void calibrate_motors() {
 
 int main(void)
 {
-    // log_file = SD.FOpen("log.csv", "w");
+    log_file = SD.FOpen("log.csv", "w");
     float touchX, touchY; //for touch screen
 
 
@@ -1073,7 +1078,7 @@ int main(void)
    fifth_performance_checkpoint();
 
 
-//    SD.FClose(log_file);
+   SD.FClose(log_file);
 
 
     // don't turn off screen until power button pressed
