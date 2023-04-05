@@ -608,8 +608,8 @@ void luggage() {
     move_forward(luggage_turn_power, 5 + 9 - .5 - 1.5 - 1.5);
     check_x(16+difference+2+1.5, MINUS);
 
-    turn_left(luggage_turn_power, 90);
-    check_x(16+difference, MINUS);
+    turn_left(60, 90);
+    check_x(16+difference+1, MINUS);
     check_heading(HEADING_DOWN, luggage_turn_power);
 
 
@@ -732,6 +732,7 @@ void fuel_levers() {
     move_backward(25, 3);
     arm_servo.SetDegree(100);
     sleep(5.0);
+    arm_servo.SetDegree(160);
     check_heading(HEADING_DOWN, 25);
     move_forward(25, 2.5);
     arm_servo.SetDegree(15);
