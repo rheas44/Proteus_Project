@@ -580,36 +580,36 @@ void luggage() {
 
     // align with right wall
     sleep(0.1);
-    turn_left(30, 45);
-    check_heading(HEADING_LEFT, 30);
+    turn_left(50, 45);
+    check_heading(HEADING_LEFT, 50);
     move_backward(40, 15);
 
     // go up ramp
     move_forward(40, 2.5);
     sleep(0.1);
-    turn_right(30, 90);
-    check_heading(HEADING_UP, 30);
+    turn_right(50, 90);
+    check_heading(HEADING_UP, 50);
     // move_forward(40, 5+5.0+12.31+4.0);
     move_forward(40, 6 + 12.31 + 3 + 2 + 2 + 2 + 2);
     check_y(45.3 + 3 - 2 + 2 - 1 - .75, PLUS);
     sleep(0.1);
 
 
-    turn_left(30, 90);
-    check_heading(HEADING_LEFT, 30);
+    turn_left(50, 90);
+    check_heading(HEADING_LEFT, 50);
 
 
     // get next to luggage
     double difference = -1.0;
-    move_forward(40, 5 + 9 - .5);
+    move_forward(50, 5 + 9 - .5);
+    check_x(16+difference+2, MINUS);
+
+    turn_left(50, 90);
     check_x(16+difference, MINUS);
-
-    turn_left(30, 90);
-    check_x(16+difference, MINUS);
-    check_heading(HEADING_DOWN, 30);
+    check_heading(HEADING_DOWN, 50);
 
 
-    move_forward(30, 2.25);
+    move_forward(50, 2.25);
     check_y(43.6, MINUS);
     for (int i = 0; i < 140; i += 140/3) {
         arm_servo.SetDegree(i);
@@ -647,7 +647,7 @@ void passport_flip() {
 void kiosk_buttons() {
     move_backward(40, 1 + 1);
 
-    check_x(11.4 + 1.5 - 1, PLUS);
+    check_x(11.4 + 1.5 - 1.5 + 0.75-0.5, PLUS);
 
     turn_left(25, 90);
     check_heading(HEADING_UP, 25);
@@ -663,7 +663,7 @@ void kiosk_buttons() {
         turn_right(35, 90);
         check_heading(HEADING_RIGHT, 25);
         move_forward(40, 10.5 - 2 - 1);
-        check_x(65, PLUS);
+        check_x(23, PLUS);
         turn_left(35, 90);
         check_heading(HEADING_UP, 25);
         move_forward(40, 20);
@@ -700,10 +700,10 @@ void kiosk_buttons() {
 
 
     // go down ramp
-    move_forward(25, 12+3+3+5);
+    move_forward(25, 12+3+3+4);
     turn_left(25, 90);
     check_heading(HEADING_RIGHT, 25);
-    move_backward(40, 3);
+    move_backward(40, 6);
 }
 
 void fuel_levers() {
@@ -728,21 +728,21 @@ void fuel_levers() {
     arm_servo.SetDegree(100);
     sleep(5.0);
     check_heading(HEADING_DOWN, 25);
-    move_forward(25, 2.5);
+    move_forward(25, 3);
     arm_servo.SetDegree(15);
     sleep(.5);
     arm_servo.SetDegree(100);
-    move_backward(25, 5);
+
     arm_servo.SetDegree(15);
 
     turn_left(25, 90);
     check_heading(HEADING_RIGHT, 25);
 
-    move_forward(40, 20 - distance);
+    move_forward(40, 20);
     turn_right(25, 45);
     check_heading((HEADING_DOWN+HEADING_RIGHT)/2, 25);
 
-    move_forward(40, 5);
+    move_forward(40, 20);
 }
 
 void course() {
