@@ -13,7 +13,7 @@
 const int LCD_WIDTH = 320;
 const int LCD_HEIGHT = 240;
 const int RPS_GET_TIMES = 10;
-const int CHECK_TIMES = 50;
+const int CHECK_TIMES = 20;
 
 const double HEADING_DOWN = 180;
 const double HEADING_RIGHT = 270;
@@ -69,8 +69,8 @@ void textLine(std::string s, double value, int row) {
 std::string colorString = "color: ?";
 
 
-void updateGui() {
-    if (cdsCell.Value() < 1.05) {
+bool updateGui() {
+    if (cdsCell.Value() < .8) {
         red = true;
     }
     int rps_lever = RPS.GetCorrectLever();
@@ -78,7 +78,7 @@ void updateGui() {
         fuel_lever = rps_lever;
     }
     if (TimeNow() > nextShowGuiTime) {
-        SD.FPrintf(log_file, "%f,%f,%f,%f,%f\n", TimeNow(), RPS.X(), RPS.Y(), RPS.Heading(), cdsCell);
+        SD.FPrintf(log_file, "%f,%f,%f,%f,%f\n", TimeNow(), RPS.X(), RPS.Y(), RPS.Heading(), cdsCell.Value());
         if (RPS.X() < 0) {
             LCD.SetBackgroundColor(RED);
         } else {
@@ -91,7 +91,9 @@ void updateGui() {
         textLine("cds", cdsCell.Value(), 13);
         // textLine("lever", fuel_lever, 13);
         nextShowGuiTime = TimeNow() + 0.25;
+        return true;
     }
+    return false;
 }
 
 void resetCounts() {
@@ -114,13 +116,11 @@ int getCounts() {
 
 
 void wait_for_light() {
-    double nextTime = 0;
+    double timeOut = TimeNow() + 30.0;
     textLine("waiting for light", 0);
-    while (cdsCell.Value() >= 1.0) {
-        if (TimeNow() > nextTime) {
-            textLine("cds: ", cdsCell.Value(), 1);
-            textLine("expected: ", 1.5, 2);
-            nextTime = TimeNow() + .1;
+    while (cdsCell.Value() >= 1.0 && TimeNow() < timeOut) {
+        if (updateGui()) {
+            textLine("timeout", timeOut - TimeNow(), 1);
         }
     }
 }
@@ -353,8 +353,10 @@ void check_x(float x_coordinate, int orientation)
 
     // Check if receiving proper RPS coordinates and whether the robot is within an acceptable range
     double current_x;
-    while (current_x = rps_x(), x_coordinate >= 0 && (current_x < x_coordinate - 1 || current_x > x_coordinate + 1))
+    int i = 0;
+    while (current_x = rps_x(), x_coordinate >= 0 && (current_x < x_coordinate - 1 || current_x > x_coordinate + 1) && i < CHECK_TIMES)
     {
+        i++;
         if (current_x > x_coordinate)
         {
             textLine("moving backward", 2);
@@ -388,8 +390,9 @@ void check_y(float y_coordinate, int orientation)
 
     // Check if receiving proper RPS coordinates and whether the robot is within an acceptable range
     double current_y;
-    while (current_y = rps_y(), y_coordinate >= 0 && (current_y < y_coordinate - 1 || current_y > y_coordinate + 1))
-    {
+    int i = 0;
+    while (current_y = rps_y(), y_coordinate >= 0 && (current_y < y_coordinate - 1 || current_y > y_coordinate + 1) && i < CHECK_TIMES) {
+        i++;
         if (current_y > y_coordinate)
         {
             textLine("moving backward", 2);
@@ -577,36 +580,37 @@ void luggage() {
     // go forward.
     move_forward(40, 8.25);
 
+    double luggage_turn_power = 55.0;
 
     // align with right wall
     sleep(0.1);
-    turn_left(50, 45);
-    check_heading(HEADING_LEFT, 50);
+    turn_left(luggage_turn_power, 45);
+    check_heading(HEADING_LEFT, luggage_turn_power);
     move_backward(40, 15);
 
     // go up ramp
     move_forward(40, 2.5);
     sleep(0.1);
-    turn_right(50, 90);
-    check_heading(HEADING_UP, 50);
+    turn_right(luggage_turn_power, 90);
+    check_heading(HEADING_UP, luggage_turn_power);
     // move_forward(40, 5+5.0+12.31+4.0);
     move_forward(40, 6 + 12.31 + 3 + 2 + 2 + 2 + 2);
     check_y(45.3 + 3 - 2 + 2 - 1 - .75, PLUS);
     sleep(0.1);
 
 
-    turn_left(50, 90);
+    turn_left(luggage_turn_power, 90);
     check_heading(HEADING_LEFT, 50);
 
 
     // get next to luggage
     double difference = -1.0;
-    move_forward(50, 5 + 9 - .5);
-    check_x(16+difference+2, MINUS);
+    move_forward(luggage_turn_power, 5 + 9 - .5 - 1.5 - 1.5);
+    check_x(16+difference+2+1.5, MINUS);
 
-    turn_left(50, 90);
+    turn_left(luggage_turn_power, 90);
     check_x(16+difference, MINUS);
-    check_heading(HEADING_DOWN, 50);
+    check_heading(HEADING_DOWN, luggage_turn_power);
 
 
     move_forward(50, 2.25);
@@ -654,7 +658,7 @@ void kiosk_buttons() {
 
     red = false;
 
-    check_y(60.8, PLUS);
+    move_forward(10, 3);
 
     if (red) {
         // red light case
@@ -700,7 +704,8 @@ void kiosk_buttons() {
 
 
     // go down ramp
-    move_forward(25, 12+3+3+4);
+    move_forward(40, 12+3+3+3);
+    check_y(20.5, MINUS);
     turn_left(25, 90);
     check_heading(HEADING_RIGHT, 25);
     move_backward(40, 6);
@@ -728,17 +733,19 @@ void fuel_levers() {
     arm_servo.SetDegree(100);
     sleep(5.0);
     check_heading(HEADING_DOWN, 25);
-    move_forward(25, 3);
+    move_forward(25, 2.5);
     arm_servo.SetDegree(15);
     sleep(.5);
     arm_servo.SetDegree(100);
 
-    arm_servo.SetDegree(15);
-
     turn_left(25, 90);
     check_heading(HEADING_RIGHT, 25);
 
-    move_forward(40, 20);
+    move_forward(40, 10-distance);
+
+    arm_servo.SetDegree(0);
+
+    check_x(11.65+3-1, PLUS);
     turn_right(25, 45);
     check_heading((HEADING_DOWN+HEADING_RIGHT)/2, 25);
 
