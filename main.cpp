@@ -609,7 +609,7 @@ void luggage() {
     check_x(16+difference+2+1.5, MINUS);
 
     turn_left(60, 90);
-    check_x(16+difference+1, MINUS);
+    check_x(16+difference+2, MINUS);
     check_heading(HEADING_DOWN, luggage_turn_power);
 
 
@@ -627,11 +627,12 @@ void passport_flip() {
     move_backward(40, 4);
     arm_servo.SetDegree(0);
 
-    move_backward(40, 5 + 4.4 - 2.0);
-    check_y(59.09 - 2.0, MINUS);
+    move_backward(40, 5 + 4.4 - 3);
+    check_y(59.09 - 2.5, MINUS);
 
     turn_left(25, 90);
     check_heading(HEADING_RIGHT, 25);
+    move_forward(25, 0.5);
 
     arm_servo.SetDegree(160);
     sleep(0.25);
@@ -704,8 +705,8 @@ void kiosk_buttons() {
 
 
     // go down ramp
-    move_forward(40, 12+3+3+3);
-    check_y(20.5, MINUS);
+    move_forward(40, 12+3+3+2.5);
+    check_y(21, MINUS);
     turn_left(25, 90);
     check_heading(HEADING_RIGHT, 25);
     move_backward(40, 6);
@@ -734,7 +735,7 @@ void fuel_levers() {
     sleep(5.0);
     arm_servo.SetDegree(160);
     check_heading(HEADING_DOWN, 25);
-    move_forward(25, 2.5);
+    move_forward(25, 2);
     arm_servo.SetDegree(15);
     sleep(.5);
     arm_servo.SetDegree(100);
