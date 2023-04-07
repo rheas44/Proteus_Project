@@ -13,7 +13,7 @@
 const int LCD_WIDTH = 320;
 const int LCD_HEIGHT = 240;
 const int RPS_GET_TIMES = 10;
-const int CHECK_TIMES = 20;
+const int CHECK_TIMES = 10;
 
 const double HEADING_DOWN = 180;
 const double HEADING_RIGHT = 270;
@@ -22,7 +22,7 @@ const double HEADING_LEFT = 90;
 
 const double ALL_THE_WAY_DOWN = 122.0;
 
-double regular_check_heading_power = 15.0;
+double regular_check_heading_power = 25.0;
 
 double leftMultiplier = 1;
 
@@ -131,7 +131,7 @@ void wait_for_light() {
 
 
 
-const double TIME_OUT = 10.0;
+const double TIME_OUT = 5.0;
 
 
 void move_forward(int percent, double inches)
@@ -343,6 +343,8 @@ void pulse_forward(int percent, float seconds)
 }
 
 
+const double threshold = 0.5;
+
 void check_x(float x_coordinate, int orientation)
 {
     textLine("check_x", 0);
@@ -358,7 +360,7 @@ void check_x(float x_coordinate, int orientation)
     // Check if receiving proper RPS coordinates and whether the robot is within an acceptable range
     double current_x;
     int i = 0;
-    while (current_x = rps_x(), x_coordinate >= 0 && (current_x < x_coordinate - 1 || current_x > x_coordinate + 1) && i < CHECK_TIMES)
+    while (current_x = rps_x(), x_coordinate >= 0 && (current_x < x_coordinate - threshold || current_x > x_coordinate + threshold) && i < CHECK_TIMES)
     {
         i++;
         if (current_x > x_coordinate)
@@ -395,7 +397,7 @@ void check_y(float y_coordinate, int orientation)
     // Check if receiving proper RPS coordinates and whether the robot is within an acceptable range
     double current_y;
     int i = 0;
-    while (current_y = rps_y(), y_coordinate >= 0 && (current_y < y_coordinate - 1 || current_y > y_coordinate + 1) && i < CHECK_TIMES) {
+    while (current_y = rps_y(), y_coordinate >= 0 && (current_y < y_coordinate - threshold || current_y > y_coordinate + threshold) && i < CHECK_TIMES) {
         i++;
         if (current_y > y_coordinate)
         {
@@ -614,6 +616,7 @@ void luggage() {
     check_x(16+difference+2+1.5, MINUS);
 
     turn_left(60, 90);
+    // check_heading((HEADING_DOWN + HEADING_LEFT)/2, luggage_check_heading_power);
     check_x(16+difference+2-1, MINUS);
     check_heading(HEADING_DOWN, luggage_check_heading_power);
 
