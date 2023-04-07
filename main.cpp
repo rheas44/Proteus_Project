@@ -823,7 +823,7 @@ int main(void)
 
     arm_servo.SetDegree(0);
 
-   // RPS.InitializeTouchMenu();
+   RPS.InitializeTouchMenu();
 
     textLine("Touch the screen", 0);
     while(LCD.Touch(&touchX,&touchY)); //Wait for screen to be unpressed
