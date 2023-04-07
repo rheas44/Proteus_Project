@@ -20,6 +20,10 @@ const double HEADING_RIGHT = 270;
 const double HEADING_UP = 0;
 const double HEADING_LEFT = 90;
 
+const double ALL_THE_WAY_DOWN = 122.0;
+
+double regular_check_heading_power = 15.0;
+
 double leftMultiplier = 1;
 
 
@@ -572,8 +576,6 @@ void fourth_performance_checkpoint() {
     // turn_right(25, 90);
 }
 
-double regular_check_heading_power = 15.0;
-
 // start at start position.
 // wait for light.
 // end facing luggage deposit.
@@ -612,7 +614,7 @@ void luggage() {
     check_x(16+difference+2+1.5, MINUS);
 
     turn_left(60, 90);
-    check_x(16+difference+2, MINUS);
+    check_x(16+difference+2-1, MINUS);
     check_heading(HEADING_DOWN, luggage_check_heading_power);
 
 
@@ -635,12 +637,12 @@ void passport_flip() {
 
     turn_left(25, 90);
     check_heading(HEADING_RIGHT, regular_check_heading_power);
-    move_forward(25, 0.5);
+    // move_forward(25, 0.5);
 
-    arm_servo.SetDegree(160);
-    sleep(0.25);
+    arm_servo.SetDegree(ALL_THE_WAY_DOWN);
+    sleep(1.0);
 
-    move_forward(40, 7.5);
+    move_forward(40, 7.5+0.5);
 
     sleep(0.5);
     arm_servo.SetDegree(0);
@@ -736,12 +738,12 @@ void fuel_levers() {
     move_backward(25, 3);
     arm_servo.SetDegree(100);
     sleep(5.0);
-    arm_servo.SetDegree(160);
+    arm_servo.SetDegree(ALL_THE_WAY_DOWN);
     check_heading(HEADING_DOWN, regular_check_heading_power);
     move_forward(25, 2);
     arm_servo.SetDegree(15);
     sleep(.5);
-    arm_servo.SetDegree(100);
+    arm_servo.SetDegree(ALL_THE_WAY_DOWN);
 
     turn_left(25, 90);
     check_heading(HEADING_RIGHT, regular_check_heading_power);
@@ -754,8 +756,8 @@ void fuel_levers() {
     turn_right(25, 45);
     check_heading((HEADING_DOWN+HEADING_RIGHT)/2, regular_check_heading_power);
 
-    move_forward(80, 10);
-    move_forward(40, 2);
+    move_forward(80, 18);
+    move_forward(40, 20);
 }
 
 void course() {
