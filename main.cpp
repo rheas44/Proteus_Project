@@ -714,7 +714,7 @@ void kiosk_buttons() {
     check_y(21, MINUS);
     turn_left(25, 90);
     check_heading(HEADING_RIGHT, regular_check_heading_power);
-    move_backward(40, 6);
+    // move_backward(40, 6);
 }
 
 void fuel_levers() {
@@ -727,7 +727,8 @@ void fuel_levers() {
         distance = 10.5;
     }
     // distance = 3.5;
-    move_forward(25, distance);
+    move_forward(25, distance-6);
+    check_x(2.5+distance, PLUS);
     sleep(0.5);
     turn_right(25, 90);
     check_heading(HEADING_DOWN, regular_check_heading_power);
