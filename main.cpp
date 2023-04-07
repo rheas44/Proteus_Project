@@ -751,7 +751,8 @@ void fuel_levers() {
     turn_right(25, 45);
     check_heading((HEADING_DOWN+HEADING_RIGHT)/2, 25);
 
-    move_forward(40, 20);
+    move_forward(80, 10);
+    move_forward(40, 2);
 }
 
 void course() {
@@ -817,7 +818,7 @@ int main(void)
 
     arm_servo.SetDegree(0);
 
-    RPS.InitializeTouchMenu();
+   // RPS.InitializeTouchMenu();
 
     textLine("Touch the screen", 0);
     while(LCD.Touch(&touchX,&touchY)); //Wait for screen to be unpressed
