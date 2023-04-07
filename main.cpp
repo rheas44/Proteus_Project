@@ -659,7 +659,7 @@ void kiosk_buttons() {
 
     check_x(11.4 + 1.5 - 1.5 + 0.75-0.5, PLUS);
 
-    turn_left(25, 90);
+    turn_left(60, 90);
     check_heading(HEADING_UP, regular_check_heading_power);
 
     red = false;
