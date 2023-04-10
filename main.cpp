@@ -299,6 +299,7 @@ double rps_y() {
 
 void check_heading(double targetHeading, int percent) {
     for (int i = 0; i < CHECK_TIMES; i++) {
+        // sleep(.2);
         double currentHeading = rps_heading();
         textLine("target h", targetHeading, 8);
         textLine("current h", currentHeading, 7);
@@ -601,11 +602,11 @@ void luggage() {
     // go up ramp
     move_forward(40, 2.5);
     sleep(0.1);
-    turn_right(luggage_turn_power, 90);
+    turn_right(80.0, 90);
     check_heading(HEADING_UP, luggage_check_heading_power);
     // move_forward(40, 5+5.0+12.31+4.0);
-    move_forward(40, 6 + 12.31 + 3 + 2 + 2 + 2 + 2);
-    check_y(45.3 + 3 - 2 + 2 - 1 - .75, PLUS);
+    move_forward(60, 6 + 12.31 + 3 + 2 + 2 + 2 + 2 + 1 + 4);
+    check_y(45.3 + 3 - 2 + 2 - 1 - .75  - .5, PLUS);
     sleep(0.1);
 
 
@@ -615,12 +616,12 @@ void luggage() {
 
     // get next to luggage
     double difference = -1.0;
-    move_forward(luggage_turn_power, 5 + 9 - .5 - 1.5 - 1.5);
-    check_x(16+difference+2+1.5, MINUS);
+    move_forward(luggage_turn_power, 5 + 9 - .5 - 1.5 - 1.5 - 1);
+    check_x(16+difference+2+1.5-1, MINUS);
 
     turn_left(60, 90);
     // check_heading((HEADING_DOWN + HEADING_LEFT)/2, luggage_check_heading_power);
-    check_x(16+difference+2-1, MINUS);
+    check_x(16+difference+2-1-1, MINUS);
     check_heading(HEADING_DOWN, luggage_check_heading_power);
 
 
@@ -638,15 +639,19 @@ void passport_flip() {
     move_backward(40, 4);
     arm_servo.SetDegree(0);
 
+
     move_backward(40, 5 + 4.4 - 3);
     check_y(59.09 - 2.5, MINUS);
+
+    arm_servo.SetDegree(ALL_THE_WAY_DOWN);
+    sleep(0.5);
+
 
     turn_left(25, 90);
     check_heading(HEADING_RIGHT, regular_check_heading_power);
     // move_forward(25, 0.5);
+    sleep(0.5);
 
-    arm_servo.SetDegree(ALL_THE_WAY_DOWN);
-    sleep(1.0);
 
     move_forward(40, 7.5+0.5);
 
@@ -661,9 +666,9 @@ void passport_flip() {
 // start after passport flip
 // end down the ramp
 void kiosk_buttons() {
-    move_backward(40, 1 + 1);
+    move_backward(40, 1 + 1 + 0.5 + 0.5);
 
-    check_x(11.4 + 1.5 - 1.5 + 0.75-0.5, PLUS);
+    check_x(11.4 + 1.5 - 1.5 + 0.75-0.5 - 0.5 - 0.5, PLUS);
 
     turn_left(60, 90);
     check_heading(HEADING_UP, regular_check_heading_power);
@@ -716,8 +721,8 @@ void kiosk_buttons() {
 
 
     // go down ramp
-    move_forward(40, 12+3+3+2.5);
-    check_y(21, MINUS);
+    move_forward(60, 12+3+3+2.5-.5);
+    check_y(21+.5, MINUS);
     turn_left(25, 90);
     check_heading(HEADING_RIGHT, regular_check_heading_power);
     // move_backward(40, 6);
@@ -733,7 +738,7 @@ void fuel_levers() {
         distance = 10.5;
     }
     // distance = 3.5;
-    move_forward(25, distance-6);
+    move_forward(25, distance-5);
     check_x(2.5+distance, PLUS);
     sleep(0.5);
     turn_right(25, 90);
@@ -755,7 +760,7 @@ void fuel_levers() {
     turn_left(25, 90);
     check_heading(HEADING_RIGHT, regular_check_heading_power);
 
-    move_forward(40, 10-distance);
+    move_forward(60, 10-distance);
 
     arm_servo.SetDegree(0);
 
@@ -763,8 +768,7 @@ void fuel_levers() {
     turn_right(25, 45);
     check_heading((HEADING_DOWN+HEADING_RIGHT)/2, regular_check_heading_power);
 
-    move_forward(80, 18);
-    move_forward(40, 20);
+    move_forward(80, 30);
 }
 
 void course() {
