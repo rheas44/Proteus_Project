@@ -273,7 +273,7 @@ double rps_heading() {
 double rps_x() {
     textLine("", 6);
     for (int i = 0; i < RPS_GET_TIMES; i++) {
-        sleep(.2);
+        sleep(.5);
         double x = RPS.X();
         if (x >= 0) {
             return x;
@@ -286,7 +286,7 @@ double rps_x() {
 double rps_y() {
     textLine("", 6);
     for (int i = 0; i < RPS_GET_TIMES; i++) {
-        sleep(.2);
+        sleep(.5);
         double y = RPS.Y();
         if (y >= 0) {
             return y;
@@ -299,7 +299,7 @@ double rps_y() {
 
 void check_heading(double targetHeading, int percent) {
     for (int i = 0; i < CHECK_TIMES; i++) {
-        sleep(.7);
+        // sleep(.2);
         double currentHeading = rps_heading();
         textLine("target h", targetHeading, 8);
         textLine("current h", currentHeading, 7);
@@ -472,8 +472,7 @@ void luggage() {
     check_heading(HEADING_DOWN, luggage_check_heading_power * 1.5);
 
 
-    move_forward(80, 1.25);
-    move_forward(40, 2.25-1.25);
+    move_forward(80, 2.25);
     // check_y(43.6, MINUS);
     for (int i = 0; i < 140; i += 140/3) {
         arm_servo.SetDegree(i);
@@ -484,38 +483,37 @@ void luggage() {
 // start after luggage
 // end at passport flip
 void passport_flip() {
-    move_backward(80, 4);
+    move_backward(40, 4);
     arm_servo.SetDegree(0);
 
 
-    move_backward(80, 5 + 4.4 - 3);
+    move_backward(40, 5 + 4.4 - 3);
     check_y(59.09 - 2.5, MINUS);
 
     arm_servo.SetDegree(ALL_THE_WAY_DOWN);
     sleep(0.5);
 
 
-    turn_left(35, 90);
+    turn_left(25, 90);
     check_heading(HEADING_RIGHT, regular_check_heading_power);
     // move_forward(25, 0.5);
     sleep(0.5);
 
 
-    move_forward(80, 7.5+0.5 - 3);
-    move_forward(25, 3);
+    move_forward(40, 7.5+0.5);
 
     sleep(0.5);
     arm_servo.SetDegree(0);
     move_forward(25, 1);
     sleep(1.5);
-    move_backward(80, 3);
+    move_backward(40, 3);
     arm_servo.SetDegree(0);
 }
 
 // start after passport flip
 // end down the ramp
 void kiosk_buttons() {
-    move_backward(80, 1 + 1 + 0.5 + 0.5);
+    move_backward(40, 1 + 1 + 0.5 + 0.5);
 
     check_x(11.4 + 1.5 - 1.5 + 0.75-0.5 - 0.5 - 0.5, PLUS);
 
@@ -529,39 +527,38 @@ void kiosk_buttons() {
     if (red) {
         // red light case
         colorString = "color: RED";
-        move_backward(80, 15);
+        move_backward(40, 15);
         turn_right(35, 90);
         check_heading(HEADING_RIGHT, regular_check_heading_power);
-        move_forward(80, 10.5 - 2 - 1);
+        move_forward(40, 10.5 - 2 - 1);
         check_x(23, PLUS);
         turn_left(35, 90);
         check_heading(HEADING_UP, regular_check_heading_power);
-        move_forward(80, 20);
-        move_backward(80, 4);
+        move_forward(40, 20);
+        move_backward(40, 4);
     } else {
         // blue light case
         colorString = "color: BLUE";
-        move_backward(80, 5);
+        move_backward(40, 5);
         turn_right(35, 90);
         check_heading(HEADING_RIGHT, regular_check_heading_power);
-        move_forward(85, 4);
+        move_forward(25, 4);
         turn_left(35, 90);
         check_heading(HEADING_UP, regular_check_heading_power);
 
-        move_forward(80, 14);
-        move_backward(80, 4);
+        move_forward(40, 14);
+        move_backward(40, 4);
     }
 
     // move back
-    move_backward(80, 4);
+    move_backward(25, 4);
 
 
     // align with left wall
     sleep(0.25);
     turn_left(35, 90);
     check_heading(HEADING_LEFT, regular_check_heading_power);
-    move_forward(80, 18 - (red ? 0 : 3.5) - 2);
-    move_forward(40, 2);
+    move_forward(40, 18);
 
     sleep(0.25);
     turn_left(25, 70);
@@ -599,11 +596,10 @@ void fuel_levers() {
     sleep(0.5);
     move_backward(25, 3);
     arm_servo.SetDegree(100);
-    double startTime = TimeNow();
+    sleep(5.0);
     arm_servo.SetDegree(ALL_THE_WAY_DOWN);
     check_heading(HEADING_DOWN, regular_check_heading_power);
     move_forward(25, 2);
-    sleep(5.0 - (TimeNow() - startTime));
     arm_servo.SetDegree(15);
     sleep(.5);
     arm_servo.SetDegree(ALL_THE_WAY_DOWN);
@@ -615,9 +611,9 @@ void fuel_levers() {
 
     arm_servo.SetDegree(0);
 
-    // check_x(11.65+3-1, PLUS);
+    check_x(11.65+3-1, PLUS);
     turn_right(25, 45);
-    check_heading((HEADING_DOWN+HEADING_RIGHT)/2, regular_check_heading_power);
+    // check_heading((HEADING_DOWN+HEADING_RIGHT)/2, regular_check_heading_power);
 
     move_forward(80, 30);
 }
