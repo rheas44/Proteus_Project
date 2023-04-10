@@ -1,3 +1,6 @@
+// todo: increase go up ramp speed+distance
+// todo: move light check_x to the left
+
 #include "FEHServo.h"
 #include <FEHLCD.h>
 #include <FEHIO.h>
@@ -257,7 +260,7 @@ void sleep(double sec) {
 double rps_heading() {
     textLine("", 6);
     for (int i = 0; i < RPS_GET_TIMES; i++) {
-        sleep(.3);
+        sleep(.5);
         double heading = RPS.Heading();
         if (heading >= 0) {
             return heading;
@@ -270,7 +273,7 @@ double rps_heading() {
 double rps_x() {
     textLine("", 6);
     for (int i = 0; i < RPS_GET_TIMES; i++) {
-        sleep(.3);
+        sleep(.5);
         double x = RPS.X();
         if (x >= 0) {
             return x;
@@ -283,7 +286,7 @@ double rps_x() {
 double rps_y() {
     textLine("", 6);
     for (int i = 0; i < RPS_GET_TIMES; i++) {
-        sleep(.3);
+        sleep(.5);
         double y = RPS.Y();
         if (y >= 0) {
             return y;
@@ -667,7 +670,7 @@ void kiosk_buttons() {
 
     red = false;
 
-    move_forward(10, 3);
+    move_forward(10, 4);
 
     if (red) {
         // red light case
