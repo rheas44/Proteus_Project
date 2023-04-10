@@ -429,166 +429,13 @@ void lowerArm() {
 }
 
 
-void third_performance_checkpoint() {
-    // wait_for_light();
-
-
-    // move_backward(35, 15);
-
-
-
-
-    // // go up ramp
-    // move_forward(25, 3.5);
-    // sleep(0.5);
-    // turn_right(35, 90);
-    // check_heading(HEADING_UP);
-    // // move_forward(40, 5+5.0+12.31+4.0);
-    // move_forward(40, 6 + 12.31 + 11);
-    // sleep(0.5);
-    // turn_left(40, 90);
-    // check_heading(HEADING_LEFT);
-    // move_forward(35, 35);
-    // // move_backward(25, .15);
-    // sleep(0.5);
-    // turn_left(25, 90);
-    // check_heading(HEADING_DOWN);
-
-
-
-
-
-
-    // // go down ramp
-    // move_forward(25, 20);
-    // move_backward(25, 2);
-    // sleep(0.5);
-    // turn_left(25, 90);
-    // check_heading(HEADING_RIGHT);
-
-
-
-
-    arm_servo.SetDegree(0);
-
-
-    move_forward(25, 21.5);
-
-
-    turn_right(35, 135);
-
-
-    // move_forward(40, 20);
-    check_heading(HEADING_RIGHT, regular_check_heading_power);
-    move_backward(40, 15);
-
-
-
-
-    double distance;
-    if (fuel_lever == 2) {
-        distance = 3.5;
-    } else if (fuel_lever == 1) {
-        distance = 7.0;
-    } else if (fuel_lever == 0) {
-        distance = 10.5;
-    }
-    // distance = 3.5;
-    move_forward(25, distance);
-    sleep(0.5);
-    turn_right(25, 90);
-    check_heading(HEADING_DOWN, regular_check_heading_power);
-    // move_forward(25, 1);
-    move_backward(25, 1.5);
-    arm_servo.SetDegree(100);
-    sleep(0.5);
-    move_backward(25, 3);
-    arm_servo.SetDegree(100);
-    sleep(5.0);
-    check_heading(HEADING_DOWN, regular_check_heading_power);
-    move_forward(25, 2.5);
-    arm_servo.SetDegree(15);
-    sleep(.5);
-    arm_servo.SetDegree(100);
-    move_backward(25, 5);
-    arm_servo.SetDegree(15);
-}
-
-
-void fourth_performance_checkpoint() {
-    wait_for_light();
-    arm_servo.SetDegree(20);
-    // go forward.
-    move_forward(40, 9.5);
-
-
-    // align with right wall
-    sleep(0.25);
-    turn_left(40, 45);
-    check_heading(HEADING_LEFT, regular_check_heading_power);
-    move_backward(35, 15);
-
-    // go up ramp
-    move_forward(25, 3.5);
-    sleep(0.25);
-    turn_right(40, 90);
-    check_heading(HEADING_UP, regular_check_heading_power);
-    // move_forward(40, 5+5.0+12.31+4.0);
-    move_forward(40, 6 + 12.31 + 10 + 1);
-    sleep(0.25);
-
-    // align with passport flip
-    turn_left(40, 90);
-    check_heading(HEADING_LEFT, regular_check_heading_power);
-    move_forward(25, 15);
-    turn_right(40, 90);
-    check_heading(HEADING_UP, regular_check_heading_power);
-    move_forward(25, 12.0);
-    turn_right(40, 90);
-    check_heading(HEADING_RIGHT, regular_check_heading_power);
-    arm_servo.SetDegree(140);
-    move_forward(25, 5);
-
-
-    // raise arm
-    LCD.SetBackgroundColor(BLUE);
-    LCD.Clear();
-    sleep(1.0);
-    arm_servo.SetDegree(40);
-    sleep(1.0);
-
-
-    // turn left to flip passport flip
-    // turn_left(25, 90);
-
-
-    // // move to other side of passport flip
-    // move_backward(25, 10);
-    // turn_left(25, 90);
-    // check_heading(HEADING_LEFT);
-    // move_forward(25, 15);
-    // turn_right(25, 90);
-    // check_heading(HEADING_UP);
-    // move_forward(25, 15.0);
-    // turn_right(25, 90);
-    // check_heading(HEADING_RIGHT);
-    // move_forward(25, 20.0);
-
-
-    // // turn right to flip passport flip back down
-    // LCD.SetBackgroundColor(GREEN);
-    // LCD.Clear();
-    // sleep(4.0);
-    // turn_right(25, 90);
-}
-
 // start at start position.
 // wait for light.
 // end facing luggage deposit.
 void luggage() {
     wait_for_light();
     // go forward.
-    move_forward(40, 8.25);
+    move_forward(80, 8.25);
 
     double luggage_turn_power = 55.0;
     double luggage_check_heading_power = 30.0;
@@ -597,16 +444,16 @@ void luggage() {
     sleep(0.1);
     turn_left(luggage_turn_power, 45);
     check_heading(HEADING_LEFT, luggage_check_heading_power);
-    move_backward(40, 15);
+    move_backward(80, 15);
 
     // go up ramp
-    move_forward(40, 2.5);
+    move_forward(80, 2.5);
     sleep(0.1);
-    turn_right(80.0, 90);
+    turn_right(80.0, 90 * 1.75);
     check_heading(HEADING_UP, luggage_check_heading_power);
     // move_forward(40, 5+5.0+12.31+4.0);
-    move_forward(60, 6 + 12.31 + 3 + 2 + 2 + 2 + 2 + 1 + 4);
-    check_y(45.3 + 3 - 2 + 2 - 1 - .75  - .5, PLUS);
+    move_forward(80, 6 + 12.31 + 3 + 2 + 2 + 2 + 2 + 1);
+    check_y(45.3 + 3 - 2 + 2 - 1 - .75, PLUS);
     sleep(0.1);
 
 
@@ -622,11 +469,11 @@ void luggage() {
     turn_left(60, 90);
     // check_heading((HEADING_DOWN + HEADING_LEFT)/2, luggage_check_heading_power);
     check_x(16+difference+2-1-1, MINUS);
-    check_heading(HEADING_DOWN, luggage_check_heading_power);
+    check_heading(HEADING_DOWN, luggage_check_heading_power * 1.5);
 
 
-    move_forward(50, 2.25);
-    check_y(43.6, MINUS);
+    move_forward(80, 2.25);
+    // check_y(43.6, MINUS);
     for (int i = 0; i < 140; i += 140/3) {
         arm_servo.SetDegree(i);
         sleep(.25);
@@ -758,7 +605,7 @@ void fuel_levers() {
     arm_servo.SetDegree(ALL_THE_WAY_DOWN);
 
     turn_left(25, 90);
-    check_heading(HEADING_RIGHT, regular_check_heading_power);
+    // check_heading(HEADING_RIGHT, regular_check_heading_power);
 
     move_forward(60, 10-distance);
 
@@ -766,7 +613,7 @@ void fuel_levers() {
 
     check_x(11.65+3-1, PLUS);
     turn_right(25, 45);
-    check_heading((HEADING_DOWN+HEADING_RIGHT)/2, regular_check_heading_power);
+    // check_heading((HEADING_DOWN+HEADING_RIGHT)/2, regular_check_heading_power);
 
     move_forward(80, 30);
 }
@@ -777,32 +624,6 @@ void course() {
     kiosk_buttons();
     fuel_levers();
 }
-
-void fifth_performance_checkpoint() {
-    luggage();
-
-    move_backward(40, 4);
-
-
-    arm_servo.SetDegree(0);
-
-
-    turn_left(25, 90);
-
-
-    check_heading(HEADING_RIGHT, 15);
-    move_forward(40, 10 + 5 + 5);
-
-
-    turn_right(25, 90);
-    check_heading(HEADING_DOWN, 15);
-
-
-    move_forward(40, 39.31 / 2);
-    check_heading(HEADING_DOWN, 15);
-    move_forward(40, 39.31 / 2);
-}
-
 
 
 void calibrate_motors() {
