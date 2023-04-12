@@ -77,7 +77,7 @@ std::string colorString = "color: ?";
 
 
 bool updateGui() {
-    if (cdsCell.Value() < .8) {
+    if (cdsCell.Value() < .9) {
         red = true;
     }
     int rps_lever = RPS.GetCorrectLever();
@@ -125,7 +125,7 @@ int getCounts() {
 void wait_for_light() {
     double timeOut = TimeNow() + 30.0;
     textLine("waiting for light", 0);
-    while (cdsCell.Value() >= 1.0 && TimeNow() < timeOut) {
+    while (cdsCell.Value() >= 1.5 && TimeNow() < timeOut) {
         if (updateGui()) {
             textLine("timeout", timeOut - TimeNow(), 1);
         }
@@ -260,7 +260,7 @@ void sleep(double sec) {
 double rps_heading() {
     textLine("", 6);
     for (int i = 0; i < RPS_GET_TIMES; i++) {
-        sleep(.55);
+        sleep(.60);
         double heading = RPS.Heading();
         if (heading >= 0) {
             return heading;
@@ -443,10 +443,11 @@ void luggage() {
     sleep(0.1);
     turn_left(luggage_turn_power, 45);
     check_heading(HEADING_LEFT, luggage_check_heading_power);
-    move_backward(80, 15);
+    move_backward(40, 18);
 
+    sleep(0.25);
     // go up ramp
-    move_forward(80, 2.5);
+    move_forward(40, 1.5);
     sleep(0.1);
     turn_right(80.0, 90 * 1.75);
     check_heading(HEADING_UP, luggage_check_heading_power);
@@ -466,7 +467,7 @@ void luggage() {
     check_x(16+difference+2+1.5-1-.25, MINUS);
 
     turn_left(60, 90);
-    // check_heading((HEADING_DOWN + HEADING_LEFT)/2, luggage_check_heading_power);
+    check_heading((HEADING_DOWN + HEADING_LEFT)/2, luggage_check_heading_power);
     check_x(16+difference+2-1-1-.25, MINUS);
     check_heading(HEADING_DOWN, luggage_check_heading_power * 1.5);
 
@@ -512,6 +513,7 @@ void passport_flip() {
 // start after passport flip
 // end down the ramp
 void kiosk_buttons() {
+    check_heading(HEADING_RIGHT, regular_check_heading_power);
     move_backward(40, 1 + 1 + 0.5 + 0.5);
 
     check_x(11.4 + 1.5 - 1.5 + 0.75-0.5 - 0.5 - 0.5, PLUS);
@@ -605,7 +607,7 @@ void fuel_levers() {
     arm_servo.SetDegree(ALL_THE_WAY_DOWN);
 
     turn_left(25, 90);
-    // check_heading(HEADING_RIGHT, regular_check_heading_power);
+    check_heading(HEADING_RIGHT, regular_check_heading_power);
 
     move_forward(60, 10-distance);
 
@@ -613,7 +615,7 @@ void fuel_levers() {
 
     check_x(11.65+3-1, PLUS);
     turn_right(25, 45);
-    // check_heading((HEADING_DOWN+HEADING_RIGHT)/2, regular_check_heading_power);
+    check_heading((HEADING_DOWN+HEADING_RIGHT)/2, regular_check_heading_power);
 
     move_forward(80, 30);
 }
