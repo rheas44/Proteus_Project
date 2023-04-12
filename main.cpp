@@ -260,7 +260,7 @@ void sleep(double sec) {
 double rps_heading() {
     textLine("", 6);
     for (int i = 0; i < RPS_GET_TIMES; i++) {
-        sleep(.5);
+        sleep(.55);
         double heading = RPS.Heading();
         if (heading >= 0) {
             return heading;
@@ -273,7 +273,7 @@ double rps_heading() {
 double rps_x() {
     textLine("", 6);
     for (int i = 0; i < RPS_GET_TIMES; i++) {
-        sleep(.5);
+        sleep(.3);
         double x = RPS.X();
         if (x >= 0) {
             return x;
@@ -286,7 +286,7 @@ double rps_x() {
 double rps_y() {
     textLine("", 6);
     for (int i = 0; i < RPS_GET_TIMES; i++) {
-        sleep(.5);
+        sleep(.3);
         double y = RPS.Y();
         if (y >= 0) {
             return y;
@@ -299,7 +299,6 @@ double rps_y() {
 
 void check_heading(double targetHeading, int percent) {
     for (int i = 0; i < CHECK_TIMES; i++) {
-        // sleep(.2);
         double currentHeading = rps_heading();
         textLine("target h", targetHeading, 8);
         textLine("current h", currentHeading, 7);
@@ -464,11 +463,11 @@ void luggage() {
     // get next to luggage
     double difference = -1.0;
     move_forward(luggage_turn_power, 5 + 9 - .5 - 1.5 - 1.5 - 1);
-    check_x(16+difference+2+1.5-1, MINUS);
+    check_x(16+difference+2+1.5-1-.25, MINUS);
 
     turn_left(60, 90);
     // check_heading((HEADING_DOWN + HEADING_LEFT)/2, luggage_check_heading_power);
-    check_x(16+difference+2-1-1, MINUS);
+    check_x(16+difference+2-1-1-.25, MINUS);
     check_heading(HEADING_DOWN, luggage_check_heading_power * 1.5);
 
 
@@ -557,7 +556,7 @@ void kiosk_buttons() {
     // align with left wall
     sleep(0.25);
     turn_left(35, 90);
-    check_heading(HEADING_LEFT, regular_check_heading_power);
+    // check_heading(HEADING_LEFT, regular_check_heading_power);
     move_forward(40, 18);
 
     sleep(0.25);
@@ -596,10 +595,11 @@ void fuel_levers() {
     sleep(0.5);
     move_backward(25, 3);
     arm_servo.SetDegree(100);
-    sleep(5.0);
+    double startTime = TimeNow();
     arm_servo.SetDegree(ALL_THE_WAY_DOWN);
     check_heading(HEADING_DOWN, regular_check_heading_power);
-    move_forward(25, 2);
+    sleep(5.0 - (TimeNow() - startTime));
+    move_forward(25, 2.15);
     arm_servo.SetDegree(15);
     sleep(.5);
     arm_servo.SetDegree(ALL_THE_WAY_DOWN);
