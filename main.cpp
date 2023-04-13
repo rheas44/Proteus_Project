@@ -16,7 +16,7 @@
 const int LCD_WIDTH = 320;
 const int LCD_HEIGHT = 240;
 const int RPS_GET_TIMES = 10;
-const int CHECK_TIMES = 10;
+const int CHECK_TIMES = 20;
 
 const double HEADING_DOWN = 180;
 const double HEADING_RIGHT = 270;
@@ -77,7 +77,7 @@ std::string colorString = "color: ?";
 
 
 bool updateGui() {
-    if (cdsCell.Value() < .9) {
+    if (cdsCell.Value() < 1.0) {
         red = true;
     }
     int rps_lever = RPS.GetCorrectLever();
@@ -447,13 +447,20 @@ void luggage() {
 
     sleep(0.25);
     // go up ramp
-    move_forward(40, 1.5);
-    sleep(0.1);
-    turn_right(80.0, 90 * 1.75);
+    if (RPS.CurrentRegionLetter() == 'C') {
+        move_forward(40, 3);
+        sleep(0.1);
+        turn_right(80.0, 90*1.75);
+    } else {
+        move_forward(40, 2);
+        sleep(0.1);
+        turn_right(80.0, 90);
+    }
+    
     check_heading(HEADING_UP, luggage_check_heading_power);
     // move_forward(40, 5+5.0+12.31+4.0);
-    move_forward(80, 6 + 12.31 + 3 + 2 + 2 + 2 + 2 + 1);
-    check_y(45.3 + 3 - 2 + 2 - 1 - .75, PLUS);
+    move_forward(80, 6 + 12.31 + 3 + 2 + 2 + 2 + 2);
+    check_y(45.3 + 3 - 2 + 2 - 1 - .75 - 1.0, PLUS);
     sleep(0.1);
 
 
@@ -550,6 +557,7 @@ void kiosk_buttons() {
         move_forward(40, 14);
         move_backward(40, 4);
     }
+   
 
     // move back
     move_backward(25, 4);
@@ -558,7 +566,7 @@ void kiosk_buttons() {
     // align with left wall
     sleep(0.25);
     turn_left(35, 90);
-    // check_heading(HEADING_LEFT, regular_check_heading_power);
+    check_heading(HEADING_LEFT, regular_check_heading_power);
     move_forward(40, 18);
 
     sleep(0.25);
