@@ -450,7 +450,7 @@ void luggage() {
     if (RPS.CurrentRegionLetter() == 'C') {
         move_forward(40, 3);
         sleep(0.1);
-        turn_right(80.0, 90*1.75);
+        turn_right(80.0, 90*1.65);
     } else {
         move_forward(40, 2);
         sleep(0.1);
@@ -481,7 +481,7 @@ void luggage() {
 
     move_forward(80, 2.25);
     // check_y(43.6, MINUS);
-    for (int i = 0; i < 140; i += 140/3) {
+    for (int i = 0; i < 140; i += 140/5) {
         arm_servo.SetDegree(i);
         sleep(.25);
     }
@@ -531,7 +531,7 @@ void kiosk_buttons() {
     red = false;
 
     move_forward(10, 4);
-
+    red = false;
     if (red) {
         // red light case
         colorString = "color: RED";
@@ -554,7 +554,7 @@ void kiosk_buttons() {
         turn_left(35, 90);
         check_heading(HEADING_UP, regular_check_heading_power);
 
-        move_forward(40, 14);
+        move_forward(40, 7);
         move_backward(40, 4);
     }
    
