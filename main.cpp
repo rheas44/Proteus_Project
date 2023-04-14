@@ -506,8 +506,7 @@ void luggage() {
     }
 }
 
-// start after luggage
-// end at passport flip
+// Flip the passport stamp
 void passport_flip() {
     // Move backward and put servo arm all the way up
     move_backward(40, 4);
