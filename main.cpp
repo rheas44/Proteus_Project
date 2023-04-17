@@ -20,7 +20,7 @@ const int RPS_GET_TIMES = 10;
 // stop doing check_{x,y,heading} after this many pulses
 const int CHECK_TIMES = 20;
 
-// time out for calls to move_forward, turn_right, etc. 
+// time out for calls to move_forward, turn_right, etc.
 const double TIME_OUT = 10.0;
 
 // RPS heading values
@@ -135,6 +135,8 @@ void resetCounts() {
 // get the encoder counts
 // if both encoders work return the average
 // otherwise return the one that works
+// bool bothEncodersWork = false;
+
 int getCounts() {
     bool bothEncodersWork = false;
     if (left_encoder.Counts() > 0 && right_encoder.Counts() > 0) {
@@ -143,6 +145,7 @@ int getCounts() {
     if (bothEncodersWork) {
         return (left_encoder.Counts() + right_encoder.Counts())/2;
     } else {
+        textLine("encoder failure", 8);
         return (left_encoder.Counts() + right_encoder.Counts());
     }
 }
@@ -175,9 +178,9 @@ void move_forward(int percent, double inches)
 
     // calculate expected motor counts using math
     int expectedCounts = (ONE_REVOLUTION_COUNTS * inches) / (2 * PI * WHEEL_RADIUS);
-    
+
     resetCounts();
-    
+
     // start motors
     right_motor.SetPercent(percent);
     left_motor.SetPercent(leftMultiplier*percent);
@@ -185,7 +188,7 @@ void move_forward(int percent, double inches)
 
     double nextTime = 0;
     int numberLowChanges = 0;
-    
+
     while(true) {
         update();
         // stop if timeout occurs
@@ -473,8 +476,6 @@ void luggage() {
         sleep(0.1);
         turn_right(80.0, 90);
     }
-    
-    // Position in front ofthe luggage properly
     check_heading(HEADING_UP, luggage_check_heading_power);
     move_forward(80, 6 + 12.31 + 3 + 2 + 2 + 2 + 2);
     check_y(45.3 + 3 - 2 + 2 - 1 - .75 - 1.0, PLUS);
@@ -496,7 +497,7 @@ void luggage() {
     check_x(16+difference+2-1-1-.25, MINUS);
     check_heading(HEADING_DOWN, luggage_check_heading_power * 1.5);
 
-    // Move forward slightly 
+    // Move forward slightly
     move_forward(80, 2.25);
 
     // Gradually move arm down to deposit luggage
@@ -515,7 +516,7 @@ void passport_flip() {
     // Move backward and check y
     move_backward(40, 5 + 4.4 - 3);
     check_y(59.09 - 2.5, MINUS);
-    
+
     // Make sure the arm servo's been set to all the way down for passport stamp flipping
     arm_servo.SetDegree(ALL_THE_WAY_DOWN);
     sleep(0.5);
@@ -553,7 +554,7 @@ void kiosk_buttons() {
 
     // Set the red boolean to false
     red = false;
-    
+
     // Move forward to position properly for kiosk light button pushing
     move_forward(10, 4);
 
@@ -582,7 +583,7 @@ void kiosk_buttons() {
         move_forward(40, 7);
         move_backward(40, 4);
     }
-   
+
 
     // move back
     move_backward(25, 4);
@@ -605,7 +606,7 @@ void kiosk_buttons() {
     // Go down the ramp
     move_forward(60, 12+3+3+2.5-.5);
     check_y(21+.5, MINUS);
-    
+
     // Turn left and check heading to prepare for the fuel lever task
     turn_left(25, 90);
     check_heading(HEADING_RIGHT, regular_check_heading_power);
@@ -648,7 +649,7 @@ void fuel_levers() {
     move_forward(60, 10-distance);
     // Put up the servo arm
     arm_servo.SetDegree(0);
-    
+
     // Get into the x position sufficient for turning and approaching the final button.
     check_x(11.65+3-1, PLUS);
     turn_right(25, 45);
@@ -729,7 +730,8 @@ int main(void)
     wait_for_light();
 
 //    fifth_performance_checkpoint();
-    course();
+    calibrate_motors();
+    // course();
 
     SD.FClose(log_file);
 
