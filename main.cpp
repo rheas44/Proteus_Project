@@ -203,7 +203,6 @@ void move_forward(int percent, double inches)
         if (TimeNow() > nextTime) {
             textLine("counts", counts, 1);
             textLine("distance", ((double)counts / expectedCounts) * inches, 2);
-            oldCounts = counts;
             textLine("time", TimeNow() - startTime, 3);
             nextTime = TimeNow() + .25;
         }
@@ -381,7 +380,7 @@ void pulse_forward(int percent, float seconds)
 }
 
 // Set the threshold for RPS check x and check y.
-const double threshold = 0.5
+const double threshold = 0.5;
 
 void check_x(float x_coordinate, int orientation)
 {
