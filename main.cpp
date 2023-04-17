@@ -17,11 +17,11 @@ const int LCD_HEIGHT = 240;
 // if RPS gives -1 this many times, give up
 const int RPS_GET_TIMES = 10;
 
-// stop doing check_{x,y,heading} after this many pulses
-const int CHECK_TIMES = 20;
-
 // time out for calls to move_forward, turn_right, etc.
 const double TIME_OUT = 10.0;
+
+// how many times to check_[xy]
+const int CHECK_TIMES = 20;
 
 // RPS heading values
 const double HEADING_DOWN = 180;
@@ -331,8 +331,8 @@ double rps_y() {
 }
 
 // Make sure that heading is correct by calculating the difference between the current and target headings. Pulse until the current heading is less than 2 degrees away from the target heading.
-void check_heading(double targetHeading, int percent) {
-    for (int i = 0; i < CHECK_TIMES; i++) {
+void check_heading(double targetHeading, int percent, int howManyPulses) {
+    for (int i = 0; i < howManyPulses; i++) {
         double currentHeading = rps_heading();
         textLine("target h", targetHeading, 8);
         textLine("current h", currentHeading, 7);
@@ -348,6 +348,9 @@ void check_heading(double targetHeading, int percent) {
         }
         if (std::abs(difference) < 2) {
             return;
+        }
+        if (i >= 5 && howManyPulses < 20) {
+            difference /= 2;
         }
         turn_right(percent, difference);
     }
@@ -461,7 +464,7 @@ void luggage() {
     // align with right wall
     sleep(0.1);
     turn_left(luggage_turn_power, 45);
-    check_heading(HEADING_LEFT, luggage_check_heading_power);
+    check_heading(HEADING_LEFT, luggage_check_heading_power, 3);
     move_backward(40, 18);
 
     sleep(0.25);
@@ -475,26 +478,26 @@ void luggage() {
         sleep(0.1);
         turn_right(80.0, 90);
     }
-    check_heading(HEADING_UP, luggage_check_heading_power);
+    check_heading(HEADING_UP, luggage_check_heading_power, 20);
     move_forward(80, 6 + 12.31 + 3 + 2 + 2 + 2 + 2);
     check_y(45.3 + 3 - 2 + 2 - 1 - .75 - 1.0, PLUS);
     sleep(0.1);
 
     // Turn left and make sure the robot has the left heading
     turn_left(luggage_turn_power, 90);
-    check_heading(HEADING_LEFT, 50);
-
+    check_heading(HEADING_LEFT, 50, 1);
+    move_backward(40, 10);
 
     // Get next to luggage bin
     double difference = -1.0;
-    move_forward(luggage_turn_power, 5 + 9 - .5 - 1.5 - 1.5 - 1);
+    move_forward(luggage_turn_power, 5 + 9 - .5 - 1.5 - 1.5 - 1 + 2);
     check_x(16+difference+2+1.5-1-.25, MINUS);
 
     // Make sure to position properly and accurately in front of the luggage deposit
     turn_left(60, 90);
-    check_heading((HEADING_DOWN + HEADING_LEFT)/2, luggage_check_heading_power);
+    check_heading((HEADING_DOWN + HEADING_LEFT)/2, luggage_check_heading_power, 2);
     check_x(16+difference+2-1-1-.25, MINUS);
-    check_heading(HEADING_DOWN, luggage_check_heading_power * 1.5);
+    check_heading(HEADING_DOWN, luggage_check_heading_power * 1.5, 2);
 
     // Move forward slightly
     move_forward(80, 2.25);
@@ -522,7 +525,7 @@ void passport_flip() {
 
     // Turn left and make sure the heading is set to heading right.
     turn_left(25, 90);
-    check_heading(HEADING_RIGHT, regular_check_heading_power);
+    check_heading(HEADING_RIGHT, regular_check_heading_power, 4);
     // move_forward(25, 0.5);
     sleep(0.5);
 
@@ -541,7 +544,7 @@ void passport_flip() {
 // Press the correct kiosk button based on the correct CdS cell reading
 void kiosk_buttons() {
     // Move backward toward the kiosk.
-    check_heading(HEADING_RIGHT, regular_check_heading_power);
+    check_heading(HEADING_RIGHT, regular_check_heading_power, 5);
     move_backward(40, 1 + 1 + 0.5 + 0.5);
 
     // Correctly position to go over the light
@@ -549,7 +552,7 @@ void kiosk_buttons() {
 
     // Turn left and make sure heading is up
     turn_left(60, 90);
-    check_heading(HEADING_UP, regular_check_heading_power);
+    check_heading(HEADING_UP, regular_check_heading_power, 5);
 
     // Set the red boolean to false
     red = false;
@@ -562,11 +565,11 @@ void kiosk_buttons() {
         colorString = "color: RED";
         move_backward(40, 15);
         turn_right(35, 90);
-        check_heading(HEADING_RIGHT, regular_check_heading_power);
+        check_heading(HEADING_RIGHT, regular_check_heading_power, 5);
         move_forward(40, 10.5 - 2 - 1);
         check_x(23, PLUS);
         turn_left(35, 90);
-        check_heading(HEADING_UP, regular_check_heading_power);
+        check_heading(HEADING_UP, regular_check_heading_power, 5);
         move_forward(40, 20);
         move_backward(40, 4);
     } else {
@@ -574,10 +577,10 @@ void kiosk_buttons() {
         colorString = "color: BLUE";
         move_backward(40, 5);
         turn_right(35, 90);
-        check_heading(HEADING_RIGHT, regular_check_heading_power);
+        check_heading(HEADING_RIGHT, regular_check_heading_power, 5);
         move_forward(25, 4);
         turn_left(35, 90);
-        check_heading(HEADING_UP, regular_check_heading_power);
+        check_heading(HEADING_UP, regular_check_heading_power, 5);
 
         move_forward(40, 7);
         move_backward(40, 4);
@@ -591,7 +594,7 @@ void kiosk_buttons() {
     // align with left wall
     sleep(0.25);
     turn_left(35, 90);
-    check_heading(HEADING_LEFT, regular_check_heading_power);
+    check_heading(HEADING_LEFT, regular_check_heading_power, 1);
     move_forward(40, 18);
 
     // Face the downward direction to go down the ramp
@@ -599,7 +602,7 @@ void kiosk_buttons() {
     turn_left(25, 70);
     move_forward(25, 2);
     turn_left(25, 20);
-    check_heading(HEADING_DOWN, regular_check_heading_power);
+    check_heading(HEADING_DOWN, regular_check_heading_power, 5);
 
 
     // Go down the ramp
@@ -608,7 +611,7 @@ void kiosk_buttons() {
 
     // Turn left and check heading to prepare for the fuel lever task
     turn_left(25, 90);
-    check_heading(HEADING_RIGHT, regular_check_heading_power);
+    check_heading(HEADING_RIGHT, regular_check_heading_power, 5);
 }
 
 void fuel_levers() {
@@ -626,7 +629,7 @@ void fuel_levers() {
     check_x(2.5+distance, PLUS);
     sleep(0.5);
     turn_right(25, 90);
-    check_heading(HEADING_DOWN, regular_check_heading_power);
+    check_heading(HEADING_DOWN, regular_check_heading_power, 20);
     move_backward(25, 1.5);
     // Flipping the correct lever down
     arm_servo.SetDegree(100);
@@ -636,7 +639,7 @@ void fuel_levers() {
     // Wait five seconds for the airplane to be fueled, and flip the fuel lever back up
     double startTime = TimeNow();
     arm_servo.SetDegree(ALL_THE_WAY_DOWN);
-    check_heading(HEADING_DOWN, regular_check_heading_power);
+    check_heading(HEADING_DOWN, regular_check_heading_power, 20);
     sleep(5.0 - (TimeNow() - startTime));
     move_forward(25, 2.15);
     arm_servo.SetDegree(15);
@@ -644,7 +647,7 @@ void fuel_levers() {
     // Approach the ramp on the right side of the course
     arm_servo.SetDegree(ALL_THE_WAY_DOWN);
     turn_left(25, 90);
-    check_heading(HEADING_RIGHT, regular_check_heading_power);
+    check_heading(HEADING_RIGHT, regular_check_heading_power, 5);
     move_forward(60, 10-distance);
     // Put up the servo arm
     arm_servo.SetDegree(0);
@@ -653,7 +656,7 @@ void fuel_levers() {
     check_x(11.65+3-1, PLUS);
     turn_right(25, 45);
     // Check heading making the robot face the final button
-    check_heading((HEADING_DOWN+HEADING_RIGHT)/2, regular_check_heading_power);
+    check_heading((HEADING_DOWN+HEADING_RIGHT)/2, regular_check_heading_power, 10);
     // Move forward into the final button
     move_forward(80, 30);
 }
