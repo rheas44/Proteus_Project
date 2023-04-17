@@ -732,8 +732,8 @@ int main(void)
     wait_for_light();
 
 //    fifth_performance_checkpoint();
-    calibrate_motors();
-    // course();
+    // calibrate_motors();
+    course();
 
     SD.FClose(log_file);
 
