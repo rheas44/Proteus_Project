@@ -460,7 +460,7 @@ void check_heading(double targetHeading, int percent, double pulseTime = REGULAR
             return;
         }
 
-        if (difference > 5) {
+        if (difference > 7.5) {
             turn_right(percent, difference);
         } else {
             if (difference < 0) {
@@ -473,6 +473,25 @@ void check_heading(double targetHeading, int percent, double pulseTime = REGULAR
         //     sleep(0.3);
         // }
     }
+}
+
+void check_heading_once(double targetHeading, int percent) {
+    sleep(.2);
+    double currentHeading = rps_heading();
+    SD.FPrintf(log_file, "# current h: %f, target h: %f\n", currentHeading, targetHeading);
+    textLine("target h", targetHeading, 8);
+    textLine("current h", currentHeading, 7);
+    if (currentHeading < 0) {
+        return;
+    }
+    double difference = currentHeading - targetHeading;
+    if (difference < -180) {
+        difference += 360;
+    }
+    if (difference > 180) {
+        difference -= 360;
+    }
+    turn_right(percent, difference);
 }
 
 // Deposit the luggage into the top bin and prepare for the next task.
@@ -488,7 +507,7 @@ void luggage() {
 
     // align with right wall
     turn_left(luggage_turn_power, 45);
-    check_heading(HEADING_LEFT, luggage_check_heading_power, .3);
+    check_heading_once(HEADING_LEFT, luggage_check_heading_power);
     move_backward(40, 18);
 
     // go up ramp
@@ -548,7 +567,7 @@ void passport_flip() {
     // move_forward(25, 0.5);
 
     // Move forward
-    move_forward(40, 7.5+0.5);
+    move_forward(40, 7.5+0.5 - 2);
 
     // Prepare for kiosk button selection
     arm_servo.SetDegree(0);
@@ -579,27 +598,27 @@ void kiosk_buttons() {
     if (red) {
         // red light case - approach the red button on the kiosk and press it by gently running into it
         colorString = "color: RED";
-        move_backward(40, 15);
+        move_backward(50, 15);
         turn_right(35, 90);
         check_heading(HEADING_RIGHT, regular_check_heading_power);
-        move_forward(40, 10.5 - 2 - 1 + 2);
+        move_forward(50, 10.5 - 2 - 1 + 2);
         check_x(23, PLUS);
         turn_left(35, 90);
         check_heading(HEADING_UP, regular_check_heading_power);
-        move_forward(40, 20);
-        move_backward(40, 4);
+        move_forward(50, 20);
+        move_backward(50, 4);
     } else {
         // blue light case - approach the blue button on the kiosk and press it by gently running into it
         colorString = "color: BLUE";
-        move_backward(40, 5);
+        move_backward(50, 5);
         turn_right(35, 90);
         check_heading(HEADING_RIGHT, regular_check_heading_power);
-        move_forward(25, 4);
+        move_forward(50, 4);
         turn_left(35, 90);
         check_heading(HEADING_UP, regular_check_heading_power);
 
-        move_forward(40, 7);
-        move_backward(40, 4);
+        move_forward(50, 7);
+        move_backward(50, 4);
     }
 
 
@@ -610,13 +629,17 @@ void kiosk_buttons() {
     // align with left wall
     turn_left(35, 90);
     check_heading(HEADING_LEFT, regular_check_heading_power);
-    move_forward(40, 18);
+    if (red) {
+        move_forward(40, 18);
+    } else {
+        move_forward(40, 18-5.5);
+    }
 
     // Face the downward direction to go down the ramp
     turn_left(25, 70);
     move_forward(25, 2);
     turn_left(25, 20);
-    check_heading(HEADING_DOWN, regular_check_heading_power);
+    check_heading_once(HEADING_DOWN, regular_check_heading_power);
 
 
     // Go down the ramp
@@ -655,6 +678,7 @@ void fuel_levers() {
     sleep(5.0 - (TimeNow() - startTime));
     move_forward(25, 2.15);
     arm_servo.SetDegree(15);
+    sleep(0.1);
     // Approach the ramp on the right side of the course
     arm_servo.SetDegree(ALL_THE_WAY_DOWN);
     turn_left(25, 90);
