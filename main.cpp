@@ -461,8 +461,10 @@ void check_heading(double targetHeading, int percent, double pulseTime = REGULAR
         }
 
         if (difference > 7.5) {
+            SD.FPrintf(log_file, "using big pulse\n");
             turn_right(percent, difference);
         } else {
+            SD.FPrintf(log_file, "using short pulse\n");
             if (difference < 0) {
                 pulse_turn(percent, pulseTime);
             } else {
@@ -504,11 +506,12 @@ void luggage() {
     // Set the luggage turn and check heading powers.
     double luggage_turn_power = 55.0;
     double luggage_check_heading_power = 30.0;
+    double luggage_check_heading_time = .225;
 
     // align with right wall
     turn_left(luggage_turn_power, 45);
-    check_heading_once(HEADING_LEFT, luggage_check_heading_power);
-    move_backward(40, 18);
+    check_heading(HEADING_LEFT, luggage_check_heading_power, luggage_check_heading_time);
+    move_backward(80, 18);
 
     // go up ramp
     if (RPS.CurrentRegionLetter() == 'C') {
@@ -518,13 +521,13 @@ void luggage() {
         move_forward(40, 2);
         turn_right(80.0, 90*1.65);
     }
-    check_heading(HEADING_UP, luggage_check_heading_power, .3);
+    check_heading(HEADING_UP, luggage_check_heading_power, luggage_check_heading_time);
     move_forward(80, 6 + 12.31 + 3 + 2 + 2 + 2 + 2);
     check_y(45.3 + 3 - 2 + 2 - 1 - .75 - 1.0, PLUS);
 
     // Turn left and make sure the robot has the left heading
     turn_left(luggage_turn_power, 90);
-    check_heading(HEADING_LEFT, 50, .35);
+    check_heading(HEADING_LEFT, 50);
     // move_backward(40, 10);
 
     // Get next to luggage bin
@@ -534,9 +537,9 @@ void luggage() {
 
     // Make sure to position properly and accurately in front of the luggage deposit
     turn_left(60, 90);
-    check_heading((HEADING_DOWN + HEADING_LEFT)/2, luggage_check_heading_power, .3);
+    check_heading((HEADING_DOWN + HEADING_LEFT)/2, luggage_check_heading_power, luggage_check_heading_time);
     check_x(16+difference+2-1-1-.25, MINUS);
-    check_heading(HEADING_DOWN, luggage_check_heading_power * 1.5, .3);
+    check_heading(HEADING_DOWN, luggage_check_heading_power, luggage_check_heading_time);
 
     // Move forward slightly
     move_forward(80, 2.25);
@@ -563,7 +566,7 @@ void passport_flip() {
 
     // Turn left and make sure the heading is set to heading right.
     turn_left(25, 90);
-    check_heading(HEADING_RIGHT, regular_check_heading_power, .3);
+    check_heading(HEADING_RIGHT, regular_check_heading_power);
     // move_forward(25, 0.5);
 
     // Move forward
@@ -605,7 +608,7 @@ void kiosk_buttons() {
         check_x(23, PLUS);
         turn_left(35, 90);
         check_heading(HEADING_UP, regular_check_heading_power);
-        move_forward(50, 20);
+        move_forward(50, 20 - 2);
         move_backward(50, 4);
     } else {
         // blue light case - approach the blue button on the kiosk and press it by gently running into it
@@ -639,7 +642,7 @@ void kiosk_buttons() {
     turn_left(25, 70);
     move_forward(25, 2);
     turn_left(25, 20);
-    check_heading_once(HEADING_DOWN, regular_check_heading_power);
+    check_heading(HEADING_DOWN, regular_check_heading_power);
 
 
     // Go down the ramp
