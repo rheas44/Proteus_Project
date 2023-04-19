@@ -387,6 +387,7 @@ void check_x(float x_coordinate, int orientation)
     int i = 0;
     while (current_x = rps_x(), x_coordinate >= 0 && (current_x < x_coordinate - threshold || current_x > x_coordinate + threshold) && i < CHECK_TIMES)
     {
+        SD.FPrintf(log_file, "# current x: %f, target x: %f\n", current_x, x_coordinate);
         i++;
         if (current_x > x_coordinate)
         {
@@ -420,6 +421,7 @@ void check_y(float y_coordinate, int orientation)
     double current_y;
     int i = 0;
     while (current_y = rps_y(), y_coordinate >= 0 && (current_y < y_coordinate - threshold || current_y > y_coordinate + threshold) && i < CHECK_TIMES) {
+        SD.FPrintf(log_file, "# current y: %f, target y: %f\n", current_y, y_coordinate);
         i++;
         if (current_y > y_coordinate)
         {
@@ -441,6 +443,7 @@ void check_y(float y_coordinate, int orientation)
 void check_heading(double targetHeading, int percent, double pulseTime = REGULAR_PULSE_TURN_TIME, double threshold = 2) {
     for (int i = 0; i < 100; i++) {
         double currentHeading = rps_heading();
+        SD.FPrintf(log_file, "# current h: %f, target h: %f\n", currentHeading, targetHeading);
         textLine("target h", targetHeading, 8);
         textLine("current h", currentHeading, 7);
         if (currentHeading < 0) {
@@ -484,30 +487,25 @@ void luggage() {
     double luggage_check_heading_power = 30.0;
 
     // align with right wall
-    sleep(0.1);
     turn_left(luggage_turn_power, 45);
     check_heading(HEADING_LEFT, luggage_check_heading_power, .3);
     move_backward(40, 18);
 
-    sleep(0.25);
     // go up ramp
     if (RPS.CurrentRegionLetter() == 'C') {
         move_forward(40, 3);
-        sleep(0.1);
         turn_right(80.0, 90*1.65);
     } else {
         move_forward(40, 2);
-        sleep(0.1);
         turn_right(80.0, 90*1.65);
     }
     check_heading(HEADING_UP, luggage_check_heading_power, .3);
     move_forward(80, 6 + 12.31 + 3 + 2 + 2 + 2 + 2);
     check_y(45.3 + 3 - 2 + 2 - 1 - .75 - 1.0, PLUS);
-    sleep(0.1);
 
     // Turn left and make sure the robot has the left heading
     turn_left(luggage_turn_power, 90);
-    check_heading(HEADING_LEFT, 50);
+    check_heading(HEADING_LEFT, 50, .35);
     // move_backward(40, 10);
 
     // Get next to luggage bin
@@ -543,22 +541,18 @@ void passport_flip() {
 
     // Make sure the arm servo's been set to all the way down for passport stamp flipping
     arm_servo.SetDegree(ALL_THE_WAY_DOWN);
-    sleep(0.5);
 
     // Turn left and make sure the heading is set to heading right.
     turn_left(25, 90);
     check_heading(HEADING_RIGHT, regular_check_heading_power, .3);
     // move_forward(25, 0.5);
-    sleep(0.5);
 
     // Move forward
     move_forward(40, 7.5+0.5);
 
     // Prepare for kiosk button selection
-    sleep(0.5);
     arm_servo.SetDegree(0);
     move_forward(25, 1);
-    sleep(1.5);
     move_backward(40, 3);
     arm_servo.SetDegree(0);
 }
@@ -588,7 +582,7 @@ void kiosk_buttons() {
         move_backward(40, 15);
         turn_right(35, 90);
         check_heading(HEADING_RIGHT, regular_check_heading_power);
-        move_forward(40, 10.5 - 2 - 1);
+        move_forward(40, 10.5 - 2 - 1 + 2);
         check_x(23, PLUS);
         turn_left(35, 90);
         check_heading(HEADING_UP, regular_check_heading_power);
@@ -614,13 +608,11 @@ void kiosk_buttons() {
 
 
     // align with left wall
-    sleep(0.25);
     turn_left(35, 90);
     check_heading(HEADING_LEFT, regular_check_heading_power);
     move_forward(40, 18);
 
     // Face the downward direction to go down the ramp
-    sleep(0.25);
     turn_left(25, 70);
     move_forward(25, 2);
     turn_left(25, 20);
@@ -649,13 +641,11 @@ void fuel_levers() {
     // Approach the correct fuel lever
     move_forward(25, distance-5);
     check_x(2.5+distance, PLUS);
-    sleep(0.5);
     turn_right(25, 90);
     check_heading(HEADING_DOWN, regular_check_heading_power);
     move_backward(25, 1.5);
     // Flipping the correct lever down
     arm_servo.SetDegree(100);
-    sleep(0.5);
     move_backward(25, 3);
     arm_servo.SetDegree(100);
     // Wait five seconds for the airplane to be fueled, and flip the fuel lever back up
@@ -665,7 +655,6 @@ void fuel_levers() {
     sleep(5.0 - (TimeNow() - startTime));
     move_forward(25, 2.15);
     arm_servo.SetDegree(15);
-    sleep(.5);
     // Approach the ramp on the right side of the course
     arm_servo.SetDegree(ALL_THE_WAY_DOWN);
     turn_left(25, 90);
