@@ -1,3 +1,9 @@
+// todo: fix go down ramp not as much
+// decrease motor power moving back
+// use more short pulses decrease 7.5
+// add timeout to detect cds light
+// drive in to pas port stamp less
+
 #include "FEHServo.h"
 #include <FEHLCD.h>
 #include <FEHIO.h>
@@ -460,7 +466,7 @@ void check_heading(double targetHeading, int percent, double pulseTime = REGULAR
             return;
         }
 
-        if (difference > 7.5) {
+        if (std::abs(difference) > 7.5) {
             SD.FPrintf(log_file, "using big pulse\n");
             turn_right(percent, difference);
         } else {
@@ -626,17 +632,18 @@ void kiosk_buttons() {
 
 
     // move back
-    move_backward(25, 4);
+    turn_left(35, 90+45);
 
 
+    move_forward(60, 18*1.5);
     // align with left wall
-    turn_left(35, 90);
-    check_heading(HEADING_LEFT, regular_check_heading_power);
-    if (red) {
-        move_forward(40, 18);
-    } else {
-        move_forward(40, 18-5.5);
-    }
+    // turn_left(35, 90);
+    // check_heading(HEADING_LEFT, regular_check_heading_power);
+    // if (red) {
+    //     move_forward(40, 18);
+    // } else {
+    //     move_forward(40, 18-5.5);
+    // }
 
     // Face the downward direction to go down the ramp
     turn_left(25, 70);
