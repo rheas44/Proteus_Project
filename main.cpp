@@ -1,10 +1,3 @@
-// todo:
-// x fix go down ramp not as much
-// x decrease motor power moving back
-// use more short pulses decrease 7.5
-// x add timeout to detect cds light
-// x drive in to pas port stamp less
-
 #include "FEHServo.h"
 #include <FEHLCD.h>
 #include <FEHIO.h>
@@ -471,11 +464,19 @@ void check_heading(double targetHeading, int percent, double pulseTime = REGULAR
             SD.FPrintf(log_file, "using big pulse\n");
             turn_right(percent, difference);
         } else {
-            SD.FPrintf(log_file, "using short pulse\n");
+            if (std::abs(difference) < 4.5) {
+                SD.FPrintf(log_file, "using tiny pulse\n");
+                pulseTime *= .7;
+            } else {
+                SD.FPrintf(log_file, "using short pulse\n");
+            }
             if (difference < 0) {
                 pulse_turn(percent, pulseTime);
             } else {
                 pulse_turn(-percent, pulseTime);
+            }
+            if (std::abs(difference) < 4.5) {
+                sleep(0.2);
             }
         }
         // if (std::abs(difference) < 5) {
@@ -519,14 +520,14 @@ void luggage() {
     turn_left(luggage_turn_power, 45);
     check_heading(HEADING_LEFT, luggage_check_heading_power, luggage_check_heading_time);
     move_backward(80, 18-4);
-    move_backward(40, 4);
+    move_backward(40, 5);
 
     // go up ramp
     if (RPS.CurrentRegionLetter() == 'C') {
-        move_forward(40, 3);
+        move_forward(40, 2);
         turn_right(80.0, 90*1.65);
     } else {
-        move_forward(40, 2);
+        move_forward(40, 1);
         turn_right(80.0, 90*1.65);
     }
     check_heading(HEADING_UP, luggage_check_heading_power, luggage_check_heading_time);
@@ -540,14 +541,22 @@ void luggage() {
 
     // Get next to luggage bin
     double difference = -1.0;
+
     move_forward(luggage_turn_power, 5 + 9 - .5 - 1.5 - 1.5 - 1 + 2);
     check_x(16+difference+2+1.5-1-.25, MINUS);
 
     // Make sure to position properly and accurately in front of the luggage deposit
-    turn_left(60, 90);
-    check_heading((HEADING_DOWN + HEADING_LEFT)/2, luggage_check_heading_power, luggage_check_heading_time);
-    check_x(16+difference+2-1-1-.25, MINUS);
-    check_heading(HEADING_DOWN, luggage_check_heading_power, luggage_check_heading_time);
+    if (RPS.CurrentRegionLetter() == 'D') {
+        turn_left(70, 90);
+        check_heading((HEADING_DOWN + HEADING_LEFT)/2, 45, luggage_check_heading_time);
+        check_x(16+difference+2-1-1-.25, MINUS);
+        check_heading(HEADING_DOWN, 45, luggage_check_heading_time);
+    } else {
+        turn_left(60, 90);
+        check_heading((HEADING_DOWN + HEADING_LEFT)/2, luggage_check_heading_power, luggage_check_heading_time);
+        check_x(16+difference+2-1-1-.25, MINUS);
+        check_heading(HEADING_DOWN, luggage_check_heading_power, luggage_check_heading_time);
+    }
 
     // Move forward slightly
     move_forward(80, 2.25);
@@ -578,7 +587,7 @@ void passport_flip() {
     // move_forward(25, 0.5);
 
     // Move forward
-    move_forward(40, 7.5+0.5 - 2 - 2);
+    move_forward(40, 7.5+0.5 - 2 - 2 + 1.3);
 
     // Prepare for kiosk button selection
     arm_servo.SetDegree(0);
@@ -597,7 +606,11 @@ void kiosk_buttons() {
     check_x(11.4 + 1.5 - 1.5 + 0.75-0.5 - 0.5 - 0.5, PLUS);
 
     // Turn left and make sure heading is up
-    turn_left(60, 90);
+    if (RPS.CurrentRegionLetter() == 'A') {
+        turn_left(90, 90);
+    } else {
+        turn_left(60, 90);
+    }
     check_heading(HEADING_UP, regular_check_heading_power);
     // check heading twice for more accuracy
     check_heading(HEADING_UP, regular_check_heading_power);
@@ -641,12 +654,11 @@ void kiosk_buttons() {
 
 
     // move back
-    turn_left(35, 90+45);
+    turn_left(35, 110);
+    check_heading(110, 35);
 
-
-    move_forward(60, 27-4);
-    turn_right(35, 45);
-    move_forward(35, 3);
+    move_forward(60, 15);
+    // turn_right(35, 45);
     // align with left wall
     // turn_left(35, 90);
     // check_heading(HEADING_LEFT, regular_check_heading_power);
@@ -657,9 +669,9 @@ void kiosk_buttons() {
     // }
 
     // Face the downward direction to go down the ramp
-    turn_left(25, 70);
-    move_forward(25, 2);
-    turn_left(25, 20);
+    turn_left(35, 50);
+    move_forward(35, 1.5);
+    turn_left(35, 20);
     check_heading(HEADING_DOWN, regular_check_heading_power);
 
 
