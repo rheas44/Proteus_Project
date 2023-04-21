@@ -1,8 +1,9 @@
-// todo: fix go down ramp not as much
-// decrease motor power moving back
+// todo:
+// x fix go down ramp not as much
+// x decrease motor power moving back
 // use more short pulses decrease 7.5
-// add timeout to detect cds light
-// drive in to pas port stamp less
+// x add timeout to detect cds light
+// x drive in to pas port stamp less
 
 #include "FEHServo.h"
 #include <FEHLCD.h>
@@ -517,7 +518,8 @@ void luggage() {
     // align with right wall
     turn_left(luggage_turn_power, 45);
     check_heading(HEADING_LEFT, luggage_check_heading_power, luggage_check_heading_time);
-    move_backward(80, 18);
+    move_backward(80, 18-4);
+    move_backward(40, 4);
 
     // go up ramp
     if (RPS.CurrentRegionLetter() == 'C') {
@@ -576,7 +578,7 @@ void passport_flip() {
     // move_forward(25, 0.5);
 
     // Move forward
-    move_forward(40, 7.5+0.5 - 2);
+    move_forward(40, 7.5+0.5 - 2 - 2);
 
     // Prepare for kiosk button selection
     arm_servo.SetDegree(0);
@@ -597,12 +599,19 @@ void kiosk_buttons() {
     // Turn left and make sure heading is up
     turn_left(60, 90);
     check_heading(HEADING_UP, regular_check_heading_power);
+    // check heading twice for more accuracy
+    check_heading(HEADING_UP, regular_check_heading_power);
 
     // Set the red boolean to false
     red = false;
 
     // Move forward to position properly for kiosk light button pushing
-    move_forward(10, 4);
+    // move_forward(10, 4);
+    left_motor.SetPercent(10);
+    right_motor.SetPercent(10);
+    sleep(4);
+    left_motor.Stop();
+    right_motor.Stop();
 
     if (red) {
         // red light case - approach the red button on the kiosk and press it by gently running into it
@@ -635,7 +644,9 @@ void kiosk_buttons() {
     turn_left(35, 90+45);
 
 
-    move_forward(60, 18*1.5);
+    move_forward(60, 27-4);
+    turn_right(35, 45);
+    move_forward(35, 3);
     // align with left wall
     // turn_left(35, 90);
     // check_heading(HEADING_LEFT, regular_check_heading_power);
@@ -653,7 +664,7 @@ void kiosk_buttons() {
 
 
     // Go down the ramp
-    move_forward(60, 12+3+3+2.5-.5);
+    move_forward(60, 12+3+3+2.5-.5 - 4);
     check_y(21+.5, MINUS);
 
     // Turn left and check heading to prepare for the fuel lever task
