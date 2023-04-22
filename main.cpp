@@ -592,7 +592,7 @@ void passport_flip() {
 
     // Prepare for kiosk button selection
     arm_servo.SetDegree(0);
-    move_forward(25, 2);
+    move_forward(25, 1);
     move_backward(40, 3);
     arm_servo.SetDegree(0);
 }
