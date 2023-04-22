@@ -53,7 +53,7 @@ double leftMultiplier = 1;
 
 //Declarations for encoders & motors
 DigitalEncoder right_encoder(FEHIO::P0_0);
-DigitalEncoder left_encoder(FEHIO::P0_1);
+DigitalEncoder left_encoder(FEHIO::P0_2);
 FEHMotor right_motor(FEHMotor::Motor0,9.0);
 FEHMotor left_motor(FEHMotor::Motor1,9.0);
 FEHServo arm_servo(FEHServo::Servo0);
@@ -138,16 +138,17 @@ void resetCounts() {
 // bool bothEncodersWork = false;
 
 int getCounts() {
-    bool bothEncodersWork = false;
-    if (left_encoder.Counts() > 0 && right_encoder.Counts() > 0) {
-        bothEncodersWork = true;
-    }
-    if (bothEncodersWork) {
-        return (left_encoder.Counts() + right_encoder.Counts())/2;
-    } else {
-        textLine("encoder failure", 8);
-        return (left_encoder.Counts() + right_encoder.Counts());
-    }
+    // bool bothEncodersWork = false;
+    // if (left_encoder.Counts() > 0 && right_encoder.Counts() > 0) {
+    //     bothEncodersWork = true;
+    // }
+    // if (bothEncodersWork) {
+    //     return (left_encoder.Counts() + right_encoder.Counts())/2;
+    // } else {
+    //     textLine("encoder failure", 8);
+        // return (left_encoder.Counts() + right_encoder.Counts());
+    // }
+    return right_encoder.Counts();
 }
 
 
@@ -524,7 +525,7 @@ void luggage() {
 
     // go up ramp
     if (RPS.CurrentRegionLetter() == 'C') {
-        move_forward(25, 1);
+        move_forward(25, 1.5);
         turn_right(80.0, 90*1.65);
     } else {
         move_forward(25, .5);
@@ -543,7 +544,7 @@ void luggage() {
     double difference = -1.0;
 
     move_forward(luggage_turn_power, 5 + 9 - .5 - 1.5 - 1.5 - 1 + 2);
-    check_x(16+difference+2+1.5-1-.25, MINUS);
+    check_x(16+difference+2+1.5-1-.25-.5, MINUS);
 
     // Make sure to position properly and accurately in front of the luggage deposit
     if (RPS.CurrentRegionLetter() == 'D') {
@@ -587,11 +588,11 @@ void passport_flip() {
     // move_forward(25, 0.5);
 
     // Move forward
-    move_forward(40, 7.5+0.5 - 2 - 2 + 1.3);
+    move_forward(40, 7.5+0.5 - 2 - 2 + 1.3 + 1.5);
 
     // Prepare for kiosk button selection
     arm_servo.SetDegree(0);
-    move_forward(25, 1);
+    move_forward(25, 2);
     move_backward(40, 3);
     arm_servo.SetDegree(0);
 }
@@ -603,7 +604,7 @@ void kiosk_buttons() {
     move_backward(40, 1 + 1 + 0.5 + 0.5);
 
     // Correctly position to go over the light
-    check_x(11.4 + 1.5 - 1.5 + 0.75-0.5 - 0.5 - 0.5, PLUS);
+    check_x(11.4 + 1.5 - 1.5 + 0.75-0.5 - 0.5 - 0.5 + .5, PLUS);
 
     // Turn left and make sure heading is up
     if (RPS.CurrentRegionLetter() == 'A') {
@@ -710,8 +711,8 @@ void fuel_levers() {
     check_heading(HEADING_DOWN, regular_check_heading_power);
     sleep(5.0 - (TimeNow() - startTime));
     move_forward(25, 2.15);
-    arm_servo.SetDegree(15);
-    sleep(0.1);
+    arm_servo.SetDegree(0);
+    sleep(0.3);
     // Approach the ramp on the right side of the course
     arm_servo.SetDegree(ALL_THE_WAY_DOWN);
     turn_left(25, 90);
