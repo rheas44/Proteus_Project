@@ -524,10 +524,10 @@ void luggage() {
 
     // go up ramp
     if (RPS.CurrentRegionLetter() == 'C') {
-        move_forward(40, 2);
+        move_forward(25, 1);
         turn_right(80.0, 90*1.65);
     } else {
-        move_forward(40, 1);
+        move_forward(25, .5);
         turn_right(80.0, 90*1.65);
     }
     check_heading(HEADING_UP, luggage_check_heading_power, luggage_check_heading_time);
